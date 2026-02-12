@@ -1,11 +1,14 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Dice5, Star, RefreshCw } from 'lucide-react'
+import { Dice5, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { WishlistButton } from '@/components/features/wishlist/WishlistButton'
+import { FilterPanel } from '@/components/features/filter/FilterPanel'
 import { useMovies } from '@/hooks/useMovies'
+import { useDiscoverMovies } from '@/hooks/useDiscoverMovies'
 import { getPosterUrl, formatRating, formatYear } from '@/utils/helpers'
 import { ROUTES } from '@/utils/constants'
 import type { Movie } from '@/services/tmdb/types'
@@ -16,16 +19,33 @@ function pickRandom(movies: Movie[], count: number): Movie[] {
 }
 
 export function Component() {
-  const { data, isLoading } = useMovies('popular')
-  const allMovies = useMemo(() => data?.movies ?? [], [data?.movies])
-
+  const [mode, setMode] = useState<'random' | 'filtered'>('random')
   const [picks, setPicks] = useState<Movie[]>([])
   const [hasRolled, setHasRolled] = useState(false)
+  const [isRolling, setIsRolling] = useState(false)
+
+  // Fetch data for both modes
+  const { data: popularData, isLoading: isLoadingPopular } =
+    useMovies('popular')
+  const { data: filteredData, isLoading: isLoadingFiltered } =
+    useDiscoverMovies()
+
+  const allMovies = useMemo(
+    () => (mode === 'random' ? popularData?.movies ?? [] : filteredData?.movies ?? []),
+    [mode, popularData?.movies, filteredData?.movies],
+  )
+
+  const isLoading = mode === 'random' ? isLoadingPopular : isLoadingFiltered
 
   const roll = useCallback(() => {
     if (allMovies.length === 0) return
+
+    setIsRolling(true)
     setPicks(pickRandom(allMovies, 3))
     setHasRolled(true)
+
+    // Stop rolling animation after 600ms
+    setTimeout(() => setIsRolling(false), 600)
   }, [allMovies])
 
   return (
@@ -37,7 +57,31 @@ export function Component() {
         </p>
       </div>
 
-      {/* 骰子按鈕 */}
+      {/* Mode Tabs */}
+      <Tabs value={mode} onValueChange={(v) => setMode(v as typeof mode)}>
+        <div className="flex justify-center">
+          <TabsList>
+            <TabsTrigger value="random">完全隨機</TabsTrigger>
+            <TabsTrigger value="filtered">條件篩選</TabsTrigger>
+          </TabsList>
+        </div>
+
+        {/* Random Mode */}
+        <TabsContent value="random" className="space-y-6">
+          <div className="text-center text-sm text-muted-foreground">
+            從熱門電影中隨機挑選 3 部
+          </div>
+        </TabsContent>
+
+        {/* Filtered Mode */}
+        <TabsContent value="filtered" className="space-y-6">
+          <div className="mx-auto max-w-md">
+            <FilterPanel />
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Roll Button with Dice Animation */}
       <div className="flex justify-center">
         <Button
           size="lg"
@@ -45,17 +89,20 @@ export function Component() {
           disabled={isLoading || allMovies.length === 0}
           className="gap-2 text-lg"
         >
-          {hasRolled ? (
-            <>
-              <RefreshCw className="size-5" />
-              再選一次
-            </>
-          ) : (
-            <>
-              <Dice5 className="size-5" />
-              開始挑片
-            </>
-          )}
+          <motion.div
+            animate={
+              isRolling
+                ? {
+                    rotate: [0, 90, 180, 270, 360],
+                    scale: [1, 1.1, 1, 1.1, 1],
+                  }
+                : {}
+            }
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
+          >
+            <Dice5 className="size-5" />
+          </motion.div>
+          {hasRolled ? '再搖一次' : '開始挑片'}
         </Button>
       </div>
 

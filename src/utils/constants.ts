@@ -28,8 +28,8 @@ export const QUERY_KEYS = {
     videos: (id: number) => [...QUERY_KEYS.movies.all, 'videos', id] as const,
     search: (query: string) =>
       [...QUERY_KEYS.movies.all, 'search', query] as const,
-    discover: (params: Record<string, unknown>) =>
-      [...QUERY_KEYS.movies.all, 'discover', params] as const,
+    discover: (params?: Record<string, unknown>) =>
+      [...QUERY_KEYS.movies.all, 'discover', params ?? {}] as const,
   },
   genres: ['genres'] as const,
 } as const
