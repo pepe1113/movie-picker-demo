@@ -23,11 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-.claude
-
 # Environment variables
 .env*
 !.env.example
 
 # Test coverage
 coverage/
+
+.claude/*
