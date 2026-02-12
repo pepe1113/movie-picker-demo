@@ -97,9 +97,13 @@ export function FilterPanel() {
         <div className="flex items-center gap-2">
           <Select
             value={year.from?.toString() ?? ''}
-            onValueChange={(v) =>
-              setYear({ ...year, from: v ? Number(v) : null })
-            }
+            onValueChange={(v) => {
+              const newFrom = v ? Number(v) : null
+              // If new from year is greater than current to year, reset to year
+              const newTo =
+                newFrom && year.to && newFrom > year.to ? null : year.to
+              setYear({ from: newFrom, to: newTo })
+            }}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="從" />
@@ -123,11 +127,13 @@ export function FilterPanel() {
               <SelectValue placeholder="到" />
             </SelectTrigger>
             <SelectContent>
-              {YEAR_OPTIONS.map((y) => (
-                <SelectItem key={y} value={y.toString()}>
-                  {y}
-                </SelectItem>
-              ))}
+              {YEAR_OPTIONS.filter((y) => !year.from || y >= year.from).map(
+                (y) => (
+                  <SelectItem key={y} value={y.toString()}>
+                    {y}
+                  </SelectItem>
+                ),
+              )}
             </SelectContent>
           </Select>
         </div>
