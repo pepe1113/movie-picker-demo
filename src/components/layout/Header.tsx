@@ -4,9 +4,7 @@ import {
   Film,
   Heart,
   Menu,
-  Moon,
   Search,
-  Sun,
   User,
   Dice5,
   TrendingUp,
@@ -20,7 +18,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useThemeStore } from '@/stores/themeStore'
 import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/utils/constants'
 
@@ -35,7 +32,6 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
-  const { theme, toggleTheme } = useThemeStore()
   const { isAuthenticated, user, signIn, signOut } = useAuthStore()
 
   const handleSearch = (e: React.FormEvent) => {
@@ -46,12 +42,6 @@ export function Header() {
       setSearchQuery('')
     }
   }
-
-  const isDark =
-    theme === 'dark' ||
-    (theme === 'system' &&
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches)
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -93,12 +83,6 @@ export function Header() {
 
         {/* 右側操作 */}
         <div className="ml-auto flex items-center gap-1 md:ml-0">
-          {/* 深色模式切換 */}
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            <span className="sr-only">切換主題</span>
-          </Button>
-
           {/* 登入/使用者 */}
           {isAuthenticated ? (
             <Button variant="ghost" size="sm" onClick={() => signOut()}>
