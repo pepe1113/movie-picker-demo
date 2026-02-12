@@ -4,7 +4,12 @@ import { useFilterStore } from '@/stores/filterStore'
 import { QUERY_KEYS } from '@/utils/constants'
 import type { DiscoverMovieParams } from '@/services/tmdb/types'
 
-export function useDiscoverMovies() {
+interface UseDiscoverMoviesOptions {
+  enabled?: boolean
+}
+
+export function useDiscoverMovies(options: UseDiscoverMoviesOptions = {}) {
+  const { enabled = true } = options
   const { genres, year, rating, sortBy } = useFilterStore()
 
   // Build discover params from filter state
@@ -51,5 +56,6 @@ export function useDiscoverMovies() {
       movies: data.pages.flatMap((page) => page.results),
       totalResults: data.pages[0]?.total_results ?? 0,
     }),
+    enabled,
   })
 }

@@ -27,26 +27,44 @@ export function Component() {
   // Fetch data for both modes
   const { data: popularData, isLoading: isLoadingPopular } =
     useMovies('popular')
-  const { data: filteredData, isLoading: isLoadingFiltered } =
-    useDiscoverMovies()
+  const {
+    data: filteredData,
+    isLoading: isLoadingFiltered,
+    refetch: refetchFiltered,
+  } = useDiscoverMovies({ enabled: false })
 
   const allMovies = useMemo(
-    () => (mode === 'random' ? popularData?.movies ?? [] : filteredData?.movies ?? []),
+    () =>
+      mode === 'random'
+        ? (popularData?.movies ?? [])
+        : (filteredData?.movies ?? []),
     [mode, popularData?.movies, filteredData?.movies],
   )
 
   const isLoading = mode === 'random' ? isLoadingPopular : isLoadingFiltered
 
-  const roll = useCallback(() => {
-    if (allMovies.length === 0) return
-
+  const roll = useCallback(async () => {
     setIsRolling(true)
-    setPicks(pickRandom(allMovies, 3))
-    setHasRolled(true)
+
+    // For filtered mode, refetch with current filter settings
+    if (mode === 'filtered') {
+      const result = await refetchFiltered()
+      const movies = result.data?.movies ?? []
+      if (movies.length > 0) {
+        setPicks(pickRandom(movies, 3))
+        setHasRolled(true)
+      }
+    } else {
+      // For random mode, use existing data
+      if (allMovies.length > 0) {
+        setPicks(pickRandom(allMovies, 3))
+        setHasRolled(true)
+      }
+    }
 
     // Stop rolling animation after 600ms
     setTimeout(() => setIsRolling(false), 600)
-  }, [allMovies])
+  }, [mode, refetchFiltered, allMovies])
 
   return (
     <div className="container mx-auto space-y-8 px-4 py-8">
@@ -68,7 +86,7 @@ export function Component() {
 
         {/* Random Mode */}
         <TabsContent value="random" className="space-y-6">
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-muted-foreground text-center text-sm">
             從熱門電影中隨機挑選 3 部
           </div>
         </TabsContent>
@@ -86,7 +104,7 @@ export function Component() {
         <Button
           size="lg"
           onClick={roll}
-          disabled={isLoading || allMovies.length === 0}
+          disabled={isLoading}
           className="gap-2 text-lg"
         >
           <motion.div
