@@ -18,7 +18,7 @@ export function useDiscoverMovies(options: UseDiscoverMoviesOptions = {}) {
   }
 
   if (genres.length > 0) {
-    params.with_genres = genres.join(',')
+    params.with_genres = genres.join('|')
   }
 
   if (year.from) {

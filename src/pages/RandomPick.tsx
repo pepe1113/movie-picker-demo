@@ -23,6 +23,7 @@ export function Component() {
   const [picks, setPicks] = useState<Movie[]>([])
   const [hasRolled, setHasRolled] = useState(false)
   const [isRolling, setIsRolling] = useState(false)
+  const [noResults, setNoResults] = useState(false)
 
   // Fetch data for both modes
   const { data: popularData, isLoading: isLoadingPopular } =
@@ -43,8 +44,16 @@ export function Component() {
 
   const isLoading = mode === 'random' ? isLoadingPopular : isLoadingFiltered
 
+  const handleModeChange = useCallback((newMode: 'random' | 'filtered') => {
+    setMode(newMode)
+    setNoResults(false)
+    setPicks([])
+    setHasRolled(false)
+  }, [])
+
   const roll = useCallback(async () => {
     setIsRolling(true)
+    setNoResults(false)
 
     // For filtered mode, refetch with current filter settings
     if (mode === 'filtered') {
@@ -53,6 +62,11 @@ export function Component() {
       if (movies.length > 0) {
         setPicks(pickRandom(movies, 3))
         setHasRolled(true)
+      } else {
+        // No results found
+        setNoResults(true)
+        setPicks([])
+        setHasRolled(false)
       }
     } else {
       // For random mode, use existing data
@@ -76,7 +90,7 @@ export function Component() {
       </div>
 
       {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(v) => setMode(v as typeof mode)}>
+      <Tabs value={mode} onValueChange={(v) => handleModeChange(v as typeof mode)}>
         <div className="flex justify-center">
           <TabsList>
             <TabsTrigger value="random">完全隨機</TabsTrigger>
@@ -183,8 +197,19 @@ export function Component() {
         )}
       </AnimatePresence>
 
+      {/* 沒有結果提示 */}
+      {noResults && !isLoading && (
+        <div className="py-12 text-center">
+          <div className="text-muted-foreground mb-4 text-6xl">🎬</div>
+          <p className="text-lg font-medium">找不到符合條件的電影</p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            試著調整篩選條件，再搖一次骰子吧！
+          </p>
+        </div>
+      )}
+
       {/* 未選擇提示 */}
-      {!hasRolled && !isLoading && (
+      {!hasRolled && !isLoading && !noResults && (
         <div className="text-muted-foreground py-12 text-center">
           <Dice5 className="mx-auto mb-4 size-16 stroke-1" />
           <p>按下按鈕，讓命運幫你決定今晚看什麼！</p>
