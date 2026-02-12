@@ -83,16 +83,16 @@ export function Component() {
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section - Bold Typography */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="border-border relative overflow-hidden border-b">
         {/* Decorative dice background */}
         <div
-          className="pointer-events-none absolute -right-10 top-0 select-none text-[16rem] font-bold leading-none tracking-tighter text-border opacity-10 md:text-[20rem] lg:text-[24rem]"
+          className="text-border pointer-events-none absolute top-0 -right-10 text-[16rem] leading-none font-bold tracking-tighter opacity-10 select-none md:text-[20rem] lg:text-[24rem]"
           aria-hidden="true"
         >
           🎲
         </div>
 
-        <div className="container relative mx-auto px-6 py-20 md:px-12 md:py-28 lg:px-16 lg:py-40">
+        <div className="relative container mx-auto px-6 py-20 md:px-12 md:py-28 lg:px-16 lg:py-40">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -100,15 +100,15 @@ export function Component() {
             className="max-w-4xl space-y-8"
           >
             {/* Accent bar */}
-            <div className="h-1 w-24 bg-accent" aria-hidden="true" />
+            <div className="bg-accent h-1 w-24" aria-hidden="true" />
 
             {/* Main headline */}
-            <h1 className="text-5xl font-bold leading-none tracking-tighter md:text-6xl lg:text-7xl xl:text-8xl">
+            <h1 className="text-5xl leading-none font-bold tracking-tighter md:text-6xl lg:text-7xl xl:text-8xl">
               隨機挑片
             </h1>
 
             {/* Subtitle */}
-            <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+            <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed md:text-xl">
               選擇障礙救星！讓命運幫你決定今晚看什麼。
               從完全隨機到條件篩選，找到你的完美觀影選擇。
             </p>
@@ -120,18 +120,21 @@ export function Component() {
       <div className="container mx-auto px-6 py-16 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-6xl space-y-12">
           {/* Mode Selection - Bold Typography Tabs */}
-          <Tabs value={mode} onValueChange={(v) => handleModeChange(v as typeof mode)}>
+          <Tabs
+            value={mode}
+            onValueChange={(v) => handleModeChange(v as typeof mode)}
+          >
             <div className="flex justify-center">
-              <TabsList className="bg-transparent p-0 gap-8">
+              <TabsList className="gap-8 bg-transparent p-0">
                 <TabsTrigger
                   value="random"
-                  className="data-[state=active]:bg-transparent data-[state=active]:text-foreground relative pb-3 font-mono text-sm uppercase tracking-widest border-b-2 border-transparent data-[state=active]:border-accent transition-colors"
+                  className="text-sm tracking-widest uppercase"
                 >
                   完全隨機
                 </TabsTrigger>
                 <TabsTrigger
                   value="filtered"
-                  className="data-[state=active]:bg-transparent data-[state=active]:text-foreground relative pb-3 font-mono text-sm uppercase tracking-widest border-b-2 border-transparent data-[state=active]:border-accent transition-colors"
+                  className="text-sm tracking-widest uppercase"
                 >
                   條件篩選
                 </TabsTrigger>
@@ -142,8 +145,11 @@ export function Component() {
             <TabsContent value="random" className="mt-12">
               <div className="space-y-8 text-center">
                 <div className="space-y-2">
-                  <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
-                  <p className="font-mono text-sm uppercase tracking-wide text-muted-foreground">
+                  <div
+                    className="bg-accent mx-auto h-0.5 w-16"
+                    aria-hidden="true"
+                  />
+                  <p className="text-muted-foreground font-mono text-sm tracking-wide uppercase">
                     從熱門電影中隨機挑選 3 部
                   </p>
                 </div>
@@ -154,8 +160,11 @@ export function Component() {
             <TabsContent value="filtered" className="mt-12">
               <div className="space-y-8">
                 <div className="space-y-2 text-center">
-                  <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
-                  <p className="font-mono text-sm uppercase tracking-wide text-muted-foreground">
+                  <div
+                    className="bg-accent mx-auto h-0.5 w-16"
+                    aria-hidden="true"
+                  />
+                  <p className="text-muted-foreground font-mono text-sm tracking-wide uppercase">
                     設定你的偏好條件
                   </p>
                 </div>
@@ -212,7 +221,10 @@ export function Component() {
               >
                 <div className="space-y-8">
                   <div className="space-y-2 text-center">
-                    <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
+                    <div
+                      className="bg-accent mx-auto h-0.5 w-16"
+                      aria-hidden="true"
+                    />
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                       你的隨機選擇
                     </h2>
@@ -228,7 +240,7 @@ export function Component() {
                         className="group relative"
                       >
                         <Link to={ROUTES.MOVIE_DETAIL(movie.id)}>
-                          <div className="relative aspect-[2/3] overflow-hidden border-2 border-border bg-muted transition-colors hover:border-accent">
+                          <div className="border-border bg-muted hover:border-accent relative aspect-[2/3] overflow-hidden border-2 transition-colors">
                             <img
                               src={getPosterUrl(movie.poster_path, 'large')}
                               alt={movie.title}
@@ -236,11 +248,11 @@ export function Component() {
                             />
 
                             {/* Info overlay */}
-                            <div className="absolute inset-x-0 bottom-0 space-y-3 border-t border-border bg-background/95 p-6 backdrop-blur-sm">
-                              <h3 className="text-lg font-bold leading-tight">
+                            <div className="border-border bg-background/95 absolute inset-x-0 bottom-0 space-y-3 border-t p-6 backdrop-blur-sm">
+                              <h3 className="text-lg leading-tight font-bold">
                                 {movie.title}
                               </h3>
-                              <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                              <div className="text-muted-foreground flex items-center gap-3 font-mono text-xs tracking-wide uppercase">
                                 <span className="flex items-center gap-1">
                                   <Star className="size-3 fill-yellow-400 text-yellow-400" />
                                   {formatRating(movie.vote_average)}
@@ -249,7 +261,7 @@ export function Component() {
                                 <span>{formatYear(movie.release_date)}</span>
                               </div>
                               {movie.overview && (
-                                <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                                <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
                                   {movie.overview}
                                 </p>
                               )}
@@ -263,7 +275,7 @@ export function Component() {
                         </div>
 
                         {/* Result number badge */}
-                        <div className="absolute top-4 left-4 flex size-10 items-center justify-center border border-accent bg-background font-mono text-lg font-bold text-accent">
+                        <div className="border-accent bg-background text-accent absolute top-4 left-4 flex size-10 items-center justify-center border font-mono text-lg font-bold">
                           {index + 1}
                         </div>
                       </motion.div>
@@ -291,7 +303,7 @@ export function Component() {
 
           {/* Initial State */}
           {!hasRolled && !isLoading && !noResults && (
-            <div className="space-y-6 py-20 text-center text-muted-foreground">
+            <div className="text-muted-foreground space-y-6 py-20 text-center">
               <Dice5 className="mx-auto size-24 stroke-1" />
               <p className="text-lg">按下按鈕，讓命運幫你決定今晚看什麼！</p>
             </div>
