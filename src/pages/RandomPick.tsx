@@ -81,140 +81,223 @@ export function Component() {
   }, [mode, refetchFiltered, allMovies])
 
   return (
-    <div className="container mx-auto space-y-8 px-4 py-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">隨機挑片</h1>
-        <p className="text-muted-foreground mt-2">
-          選擇障礙救星！讓我們幫你挑三部電影
-        </p>
-      </div>
-
-      {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(v) => handleModeChange(v as typeof mode)}>
-        <div className="flex justify-center">
-          <TabsList>
-            <TabsTrigger value="random">完全隨機</TabsTrigger>
-            <TabsTrigger value="filtered">條件篩選</TabsTrigger>
-          </TabsList>
-        </div>
-
-        {/* Random Mode */}
-        <TabsContent value="random" className="space-y-6">
-          <div className="text-muted-foreground text-center text-sm">
-            從熱門電影中隨機挑選 3 部
-          </div>
-        </TabsContent>
-
-        {/* Filtered Mode */}
-        <TabsContent value="filtered" className="space-y-6">
-          <div className="mx-auto max-w-md">
-            <FilterPanel />
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Roll Button with Dice Animation */}
-      <div className="flex justify-center">
-        <Button
-          size="lg"
-          onClick={roll}
-          disabled={isLoading}
-          className="gap-2 text-lg"
+    <div className="min-h-screen pb-20">
+      {/* Hero Section - Bold Typography */}
+      <section className="relative overflow-hidden border-b border-border">
+        {/* Decorative dice background */}
+        <div
+          className="pointer-events-none absolute -right-10 top-0 select-none text-[16rem] font-bold leading-none tracking-tighter text-border opacity-10 md:text-[20rem] lg:text-[24rem]"
+          aria-hidden="true"
         >
-          <motion.div
-            animate={
-              isRolling
-                ? {
-                    rotate: [0, 90, 180, 270, 360],
-                    scale: [1, 1.1, 1, 1.1, 1],
-                  }
-                : {}
-            }
-            transition={{ duration: 0.6, ease: 'easeInOut' }}
-          >
-            <Dice5 className="size-5" />
-          </motion.div>
-          {hasRolled ? '再搖一次' : '開始挑片'}
-        </Button>
-      </div>
-
-      {/* Loading */}
-      {isLoading && (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[2/3] w-full rounded-xl" />
-          ))}
+          🎲
         </div>
-      )}
 
-      {/* 結果 */}
-      <AnimatePresence mode="wait">
-        {picks.length > 0 && (
+        <div className="container relative mx-auto px-6 py-20 md:px-12 md:py-28 lg:px-16 lg:py-40">
           <motion.div
-            key={picks.map((p) => p.id).join('-')}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.4 }}
-            className="grid grid-cols-1 gap-6 md:grid-cols-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl space-y-8"
           >
-            {picks.map((movie, index) => (
+            {/* Accent bar */}
+            <div className="h-1 w-24 bg-accent" aria-hidden="true" />
+
+            {/* Main headline */}
+            <h1 className="text-5xl font-bold leading-none tracking-tighter md:text-6xl lg:text-7xl xl:text-8xl">
+              隨機挑片
+            </h1>
+
+            {/* Subtitle */}
+            <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+              選擇障礙救星！讓命運幫你決定今晚看什麼。
+              從完全隨機到條件篩選，找到你的完美觀影選擇。
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-16 md:px-12 md:py-20 lg:px-16">
+        <div className="mx-auto max-w-6xl space-y-12">
+          {/* Mode Selection - Bold Typography Tabs */}
+          <Tabs value={mode} onValueChange={(v) => handleModeChange(v as typeof mode)}>
+            <div className="flex justify-center">
+              <TabsList className="bg-transparent p-0 gap-8">
+                <TabsTrigger
+                  value="random"
+                  className="data-[state=active]:bg-transparent data-[state=active]:text-foreground relative pb-3 font-mono text-sm uppercase tracking-widest border-b-2 border-transparent data-[state=active]:border-accent transition-colors"
+                >
+                  完全隨機
+                </TabsTrigger>
+                <TabsTrigger
+                  value="filtered"
+                  className="data-[state=active]:bg-transparent data-[state=active]:text-foreground relative pb-3 font-mono text-sm uppercase tracking-widest border-b-2 border-transparent data-[state=active]:border-accent transition-colors"
+                >
+                  條件篩選
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Random Mode */}
+            <TabsContent value="random" className="mt-12">
+              <div className="space-y-8 text-center">
+                <div className="space-y-2">
+                  <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
+                  <p className="font-mono text-sm uppercase tracking-wide text-muted-foreground">
+                    從熱門電影中隨機挑選 3 部
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Filtered Mode */}
+            <TabsContent value="filtered" className="mt-12">
+              <div className="space-y-8">
+                <div className="space-y-2 text-center">
+                  <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
+                  <p className="font-mono text-sm uppercase tracking-wide text-muted-foreground">
+                    設定你的偏好條件
+                  </p>
+                </div>
+                <div className="mx-auto max-w-md">
+                  <FilterPanel />
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Roll Button - Big and Bold */}
+          <div className="flex justify-center py-8">
+            <Button
+              size="lg"
+              onClick={roll}
+              disabled={isLoading}
+              className="h-20 gap-4 px-12 text-xl"
+            >
               <motion.div
-                key={movie.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.15 }}
-                className="group relative overflow-hidden rounded-xl border shadow-lg"
+                animate={
+                  isRolling
+                    ? {
+                        rotate: [0, 90, 180, 270, 360],
+                        scale: [1, 1.2, 1, 1.2, 1],
+                      }
+                    : {}
+                }
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
               >
-                <Link to={ROUTES.MOVIE_DETAIL(movie.id)}>
-                  <img
-                    src={getPosterUrl(movie.poster_path, 'large')}
-                    alt={movie.title}
-                    className="aspect-[2/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
-                    <h3 className="text-lg font-bold text-white">
-                      {movie.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-white/80">
-                      <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                      {formatRating(movie.vote_average)}
-                      <span>·</span>
-                      <span>{formatYear(movie.release_date)}</span>
-                    </div>
-                    <p className="line-clamp-2 text-xs text-white/70">
-                      {movie.overview}
-                    </p>
+                <Dice5 className="size-8" />
+              </motion.div>
+              {hasRolled ? '再搖一次' : '開始挑片'}
+            </Button>
+          </div>
+
+          {/* Loading Skeletons */}
+          {isLoading && (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="aspect-[2/3] w-full" />
+              ))}
+            </div>
+          )}
+
+          {/* Results */}
+          <AnimatePresence mode="wait">
+            {picks.length > 0 && (
+              <motion.div
+                key={picks.map((p) => p.id).join('-')}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="space-y-8">
+                  <div className="space-y-2 text-center">
+                    <div className="mx-auto h-0.5 w-16 bg-accent" aria-hidden="true" />
+                    <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+                      你的隨機選擇
+                    </h2>
                   </div>
-                </Link>
-                <div className="absolute top-3 right-3">
-                  <WishlistButton movie={movie} />
+
+                  <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+                    {picks.map((movie, index) => (
+                      <motion.div
+                        key={movie.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.15 }}
+                        className="group relative"
+                      >
+                        <Link to={ROUTES.MOVIE_DETAIL(movie.id)}>
+                          <div className="relative aspect-[2/3] overflow-hidden border-2 border-border bg-muted transition-colors hover:border-accent">
+                            <img
+                              src={getPosterUrl(movie.poster_path, 'large')}
+                              alt={movie.title}
+                              className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+
+                            {/* Info overlay */}
+                            <div className="absolute inset-x-0 bottom-0 space-y-3 border-t border-border bg-background/95 p-6 backdrop-blur-sm">
+                              <h3 className="text-lg font-bold leading-tight">
+                                {movie.title}
+                              </h3>
+                              <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Star className="size-3 fill-yellow-400 text-yellow-400" />
+                                  {formatRating(movie.vote_average)}
+                                </span>
+                                <span className="text-border">|</span>
+                                <span>{formatYear(movie.release_date)}</span>
+                              </div>
+                              {movie.overview && (
+                                <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                                  {movie.overview}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+
+                        {/* Wishlist button */}
+                        <div className="absolute top-4 right-4">
+                          <WishlistButton movie={movie} />
+                        </div>
+
+                        {/* Result number badge */}
+                        <div className="absolute top-4 left-4 flex size-10 items-center justify-center border border-accent bg-background font-mono text-lg font-bold text-accent">
+                          {index + 1}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
 
-      {/* 沒有結果提示 */}
-      {noResults && !isLoading && (
-        <div className="py-12 text-center">
-          <div className="text-muted-foreground mb-4 text-6xl">🎬</div>
-          <p className="text-lg font-medium">找不到符合條件的電影</p>
-          <p className="text-muted-foreground mt-2 text-sm">
-            試著調整篩選條件，再搖一次骰子吧！
-          </p>
-        </div>
-      )}
+          {/* No Results */}
+          {noResults && !isLoading && (
+            <div className="space-y-6 py-20 text-center">
+              <div className="text-8xl">🎬</div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold tracking-tight">
+                  找不到符合條件的電影
+                </h3>
+                <p className="text-muted-foreground">
+                  試著調整篩選條件，再搖一次骰子吧！
+                </p>
+              </div>
+            </div>
+          )}
 
-      {/* 未選擇提示 */}
-      {!hasRolled && !isLoading && !noResults && (
-        <div className="text-muted-foreground py-12 text-center">
-          <Dice5 className="mx-auto mb-4 size-16 stroke-1" />
-          <p>按下按鈕，讓命運幫你決定今晚看什麼！</p>
+          {/* Initial State */}
+          {!hasRolled && !isLoading && !noResults && (
+            <div className="space-y-6 py-20 text-center text-muted-foreground">
+              <Dice5 className="mx-auto size-24 stroke-1" />
+              <p className="text-lg">按下按鈕，讓命運幫你決定今晚看什麼！</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
