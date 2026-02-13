@@ -1,0 +1,154 @@
+{
+  "common": {
+    "appName": "Movie Picker",
+    "search": "搜尋電影...",
+    "login": "登入",
+    "logout": "登出",
+    "user": "使用者",
+    "menu": "選單",
+    "loading": "載入中...",
+    "noResults": "沒有找到相關結果"
+  },
+  "nav": {
+    "home": "首頁",
+    "top100": "Top 100",
+    "random": "隨機挑片",
+    "wishlist": "收藏清單"
+  },
+  "home": {
+    "hero": {
+      "title": "發現你的下一部經典電影",
+      "subtitle": "從熱門大片到經典佳作，讓我們幫你找到完美的觀影選擇。智能推薦系統與隨機挑片功能，解決你的選擇困難。",
+      "ctaRandom": "開始隨機挑片",
+      "ctaTop100": "瀏覽 TOP 100"
+    },
+    "sections": {
+      "trending": "本週趨勢",
+      "popular": "熱門電影",
+      "topRated": "高評分電影",
+      "viewAll": "查看完整 TOP 100"
+    }
+  },
+  "footer": {
+    "tmdbDisclaimer": "本產品使用 TMDB API，但未經 TMDB 認可或認證。",
+    "copyright": "Movie Picker"
+  },
+  "random": {
+    "title": "隨機挑片",
+    "subtitle": "選擇障礙救星！讓命運幫你決定今晚看什麼。從完全隨機到條件篩選，找到你的完美觀影選擇。",
+    "modes": {
+      "random": "完全隨機",
+      "filtered": "條件篩選"
+    },
+    "descriptions": {
+      "random": "從熱門電影中隨機挑選 3 部",
+      "filtered": "設定你的偏好條件"
+    },
+    "buttons": {
+      "roll": "開始挑片",
+      "rollAgain": "再搖一次"
+    },
+    "results": {
+      "title": "你的隨機選擇"
+    },
+    "noResults": {
+      "title": "找不到符合條件的電影",
+      "description": "試著調整篩選條件，再搖一次骰子吧！"
+    },
+    "initial": "按下按鈕，讓命運幫你決定今晚看什麼！"
+  },
+  "top100": {
+    "title": "Top 100 電影",
+    "subtitle": "影迷票選最高評分電影",
+    "loadMore": "載入更多",
+    "loading": "載入中..."
+  },
+  "filter": {
+    "sortBy": "排序方式",
+    "genres": "類型",
+    "year": "年份",
+    "minRating": "最低評分",
+    "yearFrom": "從",
+    "yearTo": "到",
+    "ratingAbove": "{{rating}} 分以上",
+    "resetFilters": "重置篩選",
+    "sortOptions": {
+      "popularityDesc": "熱門度 (高→低)",
+      "popularityAsc": "熱門度 (低→高)",
+      "ratingDesc": "評分 (高→低)",
+      "ratingAsc": "評分 (低→高)",
+      "releaseDateDesc": "上映日期 (新→舊)",
+      "releaseDateAsc": "上映日期 (舊→新)"
+    }
+  },
+  "movieDetail": {
+    "notFound": "找不到這部電影",
+    "backToHome": "回到首頁",
+    "backButton": "返回",
+    "watchTrailer": "觀看預告片",
+    "sections": {
+      "overview": "劇情簡介",
+      "cast": "演員陣容",
+      "trailer": "預告片",
+      "info": "電影資訊"
+    },
+    "info": {
+      "originalTitle": "原始片名",
+      "status": "狀態",
+      "budget": "預算",
+      "revenue": "票房"
+    }
+  },
+  "wishlist": {
+    "title": "收藏清單",
+    "stats": {
+      "movieCount": "共 {{count}} 部電影",
+      "avgRating": "平均評分"
+    },
+    "clearButton": "清空收藏",
+    "clearDialog": {
+      "title": "確定要清空收藏清單？",
+      "description": "這會移除所有 {{count}} 部收藏的電影，此操作無法復原。",
+      "cancel": "取消",
+      "confirm": "確定清空"
+    },
+    "cleared": "已清空收藏清單",
+    "button": {
+      "add": "加入收藏",
+      "added": "已收藏",
+      "addedToast": "已加入收藏「{{title}}」",
+      "removedToast": "已從收藏移除「{{title}}」"
+    },
+    "empty": {
+      "title": "收藏清單是空的",
+      "description": "開始探索電影，將喜歡的電影加入收藏吧！",
+      "explore": "探索電影"
+    }
+  },
+  "errors": {
+    "loadFailed": "載入失敗，請稍後再試"
+  },
+  "movieCard": {
+    "noOverview": "暫無簡介"
+  },
+  "searchBar": {
+    "placeholder": "搜尋電影名稱...",
+    "clear": "清除"
+  },
+  "movieSection": {
+    "viewMore": "查看更多"
+  },
+  "searchResults": {
+    "found": "找到 {{count}} 部相關電影",
+    "notFound": "找不到「{{query}}」的相關電影"
+  },
+  "filterChips": {
+    "label": "篩選條件：",
+    "yearFrom": "從 {{year}} 年",
+    "yearTo": "到 {{year}} 年",
+    "ratingAbove": "{{rating}} 分以上"
+  },
+  "movieGrid": {
+    "noMovies": "找不到任何電影"
+  }
+}

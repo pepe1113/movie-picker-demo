@@ -1,0 +1,154 @@
+{
+  "common": {
+    "appName": "Movie Picker",
+    "search": "Search movies...",
+    "login": "Login",
+    "logout": "Logout",
+    "user": "User",
+    "menu": "Menu",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  },
+  "nav": {
+    "home": "Home",
+    "top100": "Top 100",
+    "random": "Random Pick",
+    "wishlist": "Wishlist"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover Your Next Classic Movie",
+      "subtitle": "From blockbusters to classics, let us help you find the perfect movie. Smart recommendations and random picks to solve your choice paralysis.",
+      "ctaRandom": "Start Random Pick",
+      "ctaTop100": "Browse TOP 100"
+    },
+    "sections": {
+      "trending": "Trending This Week",
+      "popular": "Popular Movies",
+      "topRated": "Top Rated Movies",
+      "viewAll": "View Full TOP 100"
+    }
+  },
+  "footer": {
+    "tmdbDisclaimer": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "copyright": "Movie Picker"
+  },
+  "random": {
+    "title": "Random Pick",
+    "subtitle": "Can't decide? Let fate choose for you! From completely random to filtered picks, find your perfect movie tonight.",
+    "modes": {
+      "random": "Fully Random",
+      "filtered": "With Filters"
+    },
+    "descriptions": {
+      "random": "Pick 3 random movies from popular titles",
+      "filtered": "Set your preferences"
+    },
+    "buttons": {
+      "roll": "Roll the Dice",
+      "rollAgain": "Roll Again"
+    },
+    "results": {
+      "title": "Your Random Picks"
+    },
+    "noResults": {
+      "title": "No movies match your criteria",
+      "description": "Try adjusting your filters and roll again!"
+    },
+    "initial": "Hit the button and let fate decide what to watch tonight!"
+  },
+  "top100": {
+    "title": "Top 100 Movies",
+    "subtitle": "Highest rated movies by film lovers",
+    "loadMore": "Load More",
+    "loading": "Loading..."
+  },
+  "filter": {
+    "sortBy": "Sort By",
+    "genres": "Genres",
+    "year": "Year",
+    "minRating": "Minimum Rating",
+    "yearFrom": "From",
+    "yearTo": "To",
+    "ratingAbove": "{{rating}}+ rating",
+    "resetFilters": "Reset Filters",
+    "sortOptions": {
+      "popularityDesc": "Popularity (High to Low)",
+      "popularityAsc": "Popularity (Low to High)",
+      "ratingDesc": "Rating (High to Low)",
+      "ratingAsc": "Rating (Low to High)",
+      "releaseDateDesc": "Release Date (Newest)",
+      "releaseDateAsc": "Release Date (Oldest)"
+    }
+  },
+  "movieDetail": {
+    "notFound": "Movie Not Found",
+    "backToHome": "Back to Home",
+    "backButton": "Back",
+    "watchTrailer": "Watch Trailer",
+    "sections": {
+      "overview": "Overview",
+      "cast": "Cast",
+      "trailer": "Trailer",
+      "info": "Movie Info"
+    },
+    "info": {
+      "originalTitle": "Original Title",
+      "status": "Status",
+      "budget": "Budget",
+      "revenue": "Revenue"
+    }
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "stats": {
+      "movieCount": "{{count}} movies",
+      "avgRating": "Average Rating"
+    },
+    "clearButton": "Clear All",
+    "clearDialog": {
+      "title": "Clear your wishlist?",
+      "description": "This will remove all {{count}} movies from your wishlist. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Clear All"
+    },
+    "cleared": "Wishlist cleared",
+    "button": {
+      "add": "Add to Wishlist",
+      "added": "In Wishlist",
+      "addedToast": "Added \"{{title}}\" to wishlist",
+      "removedToast": "Removed \"{{title}}\" from wishlist"
+    },
+    "empty": {
+      "title": "Your wishlist is empty",
+      "description": "Start exploring movies and add your favorites!",
+      "explore": "Explore Movies"
+    }
+  },
+  "errors": {
+    "loadFailed": "Failed to load, please try again later"
+  },
+  "movieCard": {
+    "noOverview": "No overview available"
+  },
+  "searchBar": {
+    "placeholder": "Search movies...",
+    "clear": "Clear"
+  },
+  "movieSection": {
+    "viewMore": "View More"
+  },
+  "searchResults": {
+    "found": "Found {{count}} movies",
+    "notFound": "No movies found for \"{{query}}\""
+  },
+  "filterChips": {
+    "label": "Filters:",
+    "yearFrom": "From {{year}}",
+    "yearTo": "To {{year}}",
+    "ratingAbove": "{{rating}}+ rating"
+  },
+  "movieGrid": {
+    "noMovies": "No movies found"
+  }
+}
