@@ -8,6 +8,7 @@ import {
   User,
   Dice5,
   TrendingUp,
+  Languages,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,7 +19,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAuthStore } from '@/stores/authStore'
+import { useLanguageStore } from '@/stores/languageStore'
 import { ROUTES } from '@/utils/constants'
 
 const NAV_ITEMS = [
@@ -33,6 +41,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { isAuthenticated, user, signIn, signOut } = useAuthStore()
+  const { language, setLanguage } = useLanguageStore()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,6 +92,26 @@ export function Header() {
 
         {/* 右側操作 */}
         <div className="ml-auto flex items-center gap-1 md:ml-0">
+          {/* 語言切換 */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Languages className="size-4" />
+                <span className="hidden sm:inline">
+                  {language === 'zh-TW' ? '繁體中文' : 'English'}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setLanguage('zh-TW')}>
+                繁體中文
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('en')}>
+                English
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* 登入/使用者 */}
           {isAuthenticated ? (
             <Button variant="ghost" size="sm" onClick={() => signOut()}>
