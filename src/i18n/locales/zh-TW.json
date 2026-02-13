@@ -63,6 +63,24 @@
     "loadMore": "載入更多",
     "loading": "載入中..."
   },
+  "movieDetail": {
+    "notFound": "找不到這部電影",
+    "backToHome": "回到首頁",
+    "backButton": "返回",
+    "watchTrailer": "觀看預告片",
+    "sections": {
+      "overview": "劇情簡介",
+      "cast": "演員陣容",
+      "trailer": "預告片",
+      "info": "電影資訊"
+    },
+    "info": {
+      "originalTitle": "原始片名",
+      "status": "狀態",
+      "budget": "預算",
+      "revenue": "票房"
+    }
+  },
   "wishlist": {
     "title": "收藏清單",
     "stats": {

@@ -63,6 +63,24 @@
     "loadMore": "Load More",
     "loading": "Loading..."
   },
+  "movieDetail": {
+    "notFound": "Movie Not Found",
+    "backToHome": "Back to Home",
+    "backButton": "Back",
+    "watchTrailer": "Watch Trailer",
+    "sections": {
+      "overview": "Overview",
+      "cast": "Cast",
+      "trailer": "Trailer",
+      "info": "Movie Info"
+    },
+    "info": {
+      "originalTitle": "Original Title",
+      "status": "Status",
+      "budget": "Budget",
+      "revenue": "Revenue"
+    }
+  },
   "wishlist": {
     "title": "Wishlist",
     "stats": {

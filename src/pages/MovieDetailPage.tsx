@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, Clock, Play } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -18,6 +19,7 @@ import { ROUTES } from '@/utils/constants'
 import type { Movie } from '@/services/tmdb/types'
 
 export function Component() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const movieId = Number(id)
   const { detail, credits, videos, isLoading, isError } =
@@ -26,11 +28,13 @@ export function Component() {
   if (isError) {
     return (
       <div className="container mx-auto flex flex-col items-center gap-6 px-6 py-20">
-        <h1 className="text-4xl font-bold tracking-tight">找不到這部電影</h1>
+        <h1 className="text-4xl font-bold tracking-tight">
+          {t('movieDetail.notFound')}
+        </h1>
         <Button variant="outline" asChild>
           <Link to={ROUTES.HOME}>
             <ArrowLeft className="size-4" />
-            回到首頁
+            {t('movieDetail.backToHome')}
           </Link>
         </Button>
       </div>
@@ -93,7 +97,7 @@ export function Component() {
           <Button variant="ghost" size="sm" className="mb-8" asChild>
             <Link to={ROUTES.HOME}>
               <ArrowLeft className="size-4" />
-              返回
+              {t('movieDetail.backButton')}
             </Link>
           </Button>
 
@@ -181,7 +185,7 @@ export function Component() {
                       rel="noopener noreferrer"
                     >
                       <Play className="size-5" />
-                      觀看預告片
+                      {t('movieDetail.watchTrailer')}
                     </a>
                   </Button>
                 )}
@@ -193,7 +197,7 @@ export function Component() {
                   <div className="space-y-2">
                     <div className="h-0.5 w-12 bg-accent" aria-hidden="true" />
                     <h3 className="text-2xl font-bold tracking-tight">
-                      劇情簡介
+                      {t('movieDetail.sections.overview')}
                     </h3>
                   </div>
                   <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground">
@@ -214,7 +218,7 @@ export function Component() {
             <div className="space-y-2">
               <div className="h-0.5 w-12 bg-accent" aria-hidden="true" />
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                演員陣容
+                {t('movieDetail.sections.cast')}
               </h2>
             </div>
 
@@ -250,7 +254,7 @@ export function Component() {
             <div className="space-y-2">
               <div className="h-0.5 w-12 bg-accent" aria-hidden="true" />
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                預告片
+                {t('movieDetail.sections.trailer')}
               </h2>
             </div>
 
@@ -271,27 +275,27 @@ export function Component() {
           <div className="space-y-2">
             <div className="h-0.5 w-12 bg-accent" aria-hidden="true" />
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              電影資訊
+              {t('movieDetail.sections.info')}
             </h2>
           </div>
 
           <div className="grid grid-cols-2 gap-6 font-mono text-sm md:grid-cols-4">
             <div className="space-y-2">
               <p className="uppercase tracking-wide text-muted-foreground">
-                原始片名
+                {t('movieDetail.info.originalTitle')}
               </p>
               <p className="font-semibold">{detail.original_title}</p>
             </div>
             <div className="space-y-2">
               <p className="uppercase tracking-wide text-muted-foreground">
-                狀態
+                {t('movieDetail.info.status')}
               </p>
               <p className="font-semibold">{detail.status}</p>
             </div>
             {detail.budget > 0 && (
               <div className="space-y-2">
                 <p className="uppercase tracking-wide text-muted-foreground">
-                  預算
+                  {t('movieDetail.info.budget')}
                 </p>
                 <p className="font-semibold">
                   ${detail.budget.toLocaleString()}
@@ -301,7 +305,7 @@ export function Component() {
             {detail.revenue > 0 && (
               <div className="space-y-2">
                 <p className="uppercase tracking-wide text-muted-foreground">
-                  票房
+                  {t('movieDetail.info.revenue')}
                 </p>
                 <p className="font-semibold">
                   ${detail.revenue.toLocaleString()}
