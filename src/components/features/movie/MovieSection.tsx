@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { MovieCard } from './MovieCard'
 import { MovieSkeleton } from './MovieSkeleton'
@@ -23,10 +24,12 @@ export function MovieSection({
   isLoading = false,
   limit,
   moreLink,
-  moreLinkText = '查看更多',
+  moreLinkText,
   sectionNumber,
 }: MovieSectionProps) {
+  const { t } = useTranslation()
   const displayMovies = limit ? movies.slice(0, limit) : movies
+  const linkText = moreLinkText || t('movieSection.viewMore')
 
   return (
     <section className="relative">
@@ -61,7 +64,7 @@ export function MovieSection({
           {moreLink && (
             <Button variant="ghost" asChild className="hidden md:inline-flex">
               <Link to={moreLink}>
-                {moreLinkText}
+                {linkText}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -88,7 +91,7 @@ export function MovieSection({
           <div className="md:hidden">
             <Button variant="ghost" asChild className="w-full">
               <Link to={moreLink}>
-                {moreLinkText}
+                {linkText}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>

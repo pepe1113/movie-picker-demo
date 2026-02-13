@@ -1,11 +1,13 @@
 import { X } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { getGenres } from '@/services/tmdb/api'
 import { useFilterStore } from '@/stores/filterStore'
 import { QUERY_KEYS } from '@/utils/constants'
 
 export function FilterChips() {
+  const { t } = useTranslation()
   const {
     genres: selectedGenres,
     year,
@@ -29,7 +31,9 @@ export function FilterChips() {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-muted-foreground text-sm">篩選條件：</span>
+      <span className="text-muted-foreground text-sm">
+        {t('filterChips.label')}
+      </span>
 
       {genreNames.map((genre) => (
         <Badge
@@ -49,7 +53,7 @@ export function FilterChips() {
           className="cursor-pointer gap-1"
           onClick={() => setYear({ ...year, from: null })}
         >
-          從 {year.from} 年
+          {t('filterChips.yearFrom', { year: year.from })}
           <X className="size-3" />
         </Badge>
       )}
@@ -60,7 +64,7 @@ export function FilterChips() {
           className="cursor-pointer gap-1"
           onClick={() => setYear({ ...year, to: null })}
         >
-          到 {year.to} 年
+          {t('filterChips.yearTo', { year: year.to })}
           <X className="size-3" />
         </Badge>
       )}
@@ -71,7 +75,7 @@ export function FilterChips() {
           className="cursor-pointer gap-1"
           onClick={() => setRating({ ...rating, min: 0 })}
         >
-          {rating.min} 分以上
+          {t('filterChips.ratingAbove', { rating: rating.min })}
           <X className="size-3" />
         </Badge>
       )}

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { WishlistButton } from '@/components/features/wishlist/WishlistButton'
 import { getPosterUrl, formatRating, formatYear } from '@/utils/helpers'
@@ -12,6 +13,8 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ movie }: MovieCardProps) {
+  const { t } = useTranslation()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,7 +36,7 @@ export function MovieCard({ movie }: MovieCardProps) {
           {/* Hover overlay - Simplified */}
           <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background via-background/60 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <p className="line-clamp-3 text-xs leading-relaxed text-foreground/90">
-              {movie.overview || '暫無簡介'}
+              {movie.overview || t('movieCard.noOverview')}
             </p>
           </div>
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ROUTES } from '@/utils/constants'
@@ -14,6 +15,7 @@ export function SearchBar({
   defaultValue = '',
   autoFocus = false,
 }: SearchBarProps) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState(defaultValue)
   const navigate = useNavigate()
 
@@ -34,7 +36,7 @@ export function SearchBar({
       <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         type="search"
-        placeholder="搜尋電影名稱..."
+        placeholder={t('searchBar.placeholder')}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         autoFocus={autoFocus}
@@ -49,7 +51,7 @@ export function SearchBar({
           onClick={handleClear}
         >
           <X className="size-3" />
-          <span className="sr-only">清除</span>
+          <span className="sr-only">{t('searchBar.clear')}</span>
         </Button>
       )}
     </form>

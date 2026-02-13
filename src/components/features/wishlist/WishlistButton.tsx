@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Heart } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { useWishlistStore } from '@/stores/wishlistStore'
 import type { Movie } from '@/services/tmdb/types'
@@ -14,6 +15,7 @@ export function WishlistButton({
   movie,
   size = 'default',
 }: WishlistButtonProps) {
+  const { t } = useTranslation()
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlistStore()
   const isWishlisted = isInWishlist(movie.id)
 
@@ -23,10 +25,10 @@ export function WishlistButton({
 
     if (isWishlisted) {
       removeFromWishlist(movie.id)
-      toast.success(`已從收藏移除「${movie.title}」`)
+      toast.success(t('wishlist.button.removedToast', { title: movie.title }))
     } else {
       addToWishlist(movie)
-      toast.success(`已加入收藏「${movie.title}」`)
+      toast.success(t('wishlist.button.addedToast', { title: movie.title }))
     }
   }
 
@@ -39,7 +41,10 @@ export function WishlistButton({
         className={size === 'lg' ? 'gap-2' : ''}
       >
         <Heart className={`size-4 ${isWishlisted ? 'fill-current' : ''}`} />
-        {size === 'lg' && (isWishlisted ? '已收藏' : '加入收藏')}
+        {size === 'lg' &&
+          (isWishlisted
+            ? t('wishlist.button.added')
+            : t('wishlist.button.add'))}
       </Button>
     </motion.div>
   )

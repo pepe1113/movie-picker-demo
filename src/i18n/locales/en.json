@@ -112,9 +112,43 @@
       "cancel": "Cancel",
       "confirm": "Clear All"
     },
-    "cleared": "Wishlist cleared"
+    "cleared": "Wishlist cleared",
+    "button": {
+      "add": "Add to Wishlist",
+      "added": "In Wishlist",
+      "addedToast": "Added \"{{title}}\" to wishlist",
+      "removedToast": "Removed \"{{title}}\" from wishlist"
+    },
+    "empty": {
+      "title": "Your wishlist is empty",
+      "description": "Start exploring movies and add your favorites!",
+      "explore": "Explore Movies"
+    }
   },
   "errors": {
     "loadFailed": "Failed to load, please try again later"
+  },
+  "movieCard": {
+    "noOverview": "No overview available"
+  },
+  "searchBar": {
+    "placeholder": "Search movies...",
+    "clear": "Clear"
+  },
+  "movieSection": {
+    "viewMore": "View More"
+  },
+  "searchResults": {
+    "found": "Found {{count}} movies",
+    "notFound": "No movies found for \"{{query}}\""
+  },
+  "filterChips": {
+    "label": "Filters:",
+    "yearFrom": "From {{year}}",
+    "yearTo": "To {{year}}",
+    "ratingAbove": "{{rating}}+ rating"
+  },
+  "movieGrid": {
+    "noMovies": "No movies found"
   }
 }

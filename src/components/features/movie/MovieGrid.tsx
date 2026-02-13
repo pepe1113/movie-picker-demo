@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MovieCard } from './MovieCard'
 import { MovieSkeleton } from './MovieSkeleton'
 import type { Movie } from '@/services/tmdb/types'
@@ -19,10 +20,12 @@ export function MovieGrid({
   hasNextPage = false,
   isFetchingNextPage = false,
   onLoadMore,
-  emptyMessage = '找不到任何電影',
+  emptyMessage,
   skeletonCount = 12,
 }: MovieGridProps) {
+  const { t } = useTranslation()
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const defaultEmptyMessage = emptyMessage || t('movieGrid.noMovies')
 
   // IntersectionObserver 無限滾動
   useEffect(() => {
@@ -60,7 +63,7 @@ export function MovieGrid({
   if (movies.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-muted-foreground text-lg">{emptyMessage}</p>
+        <p className="text-muted-foreground text-lg">{defaultEmptyMessage}</p>
       </div>
     )
   }

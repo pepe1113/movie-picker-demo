@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { MovieGrid } from '@/components/features/movie/MovieGrid'
 import { useSearch } from '@/hooks/useSearch'
 
@@ -6,6 +7,7 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ query }: SearchResultsProps) {
+  const { t } = useTranslation()
   const {
     data,
     isLoading,
@@ -21,7 +23,7 @@ export function SearchResults({ query }: SearchResultsProps) {
     <div className="space-y-4">
       {data && (
         <p className="text-muted-foreground text-sm">
-          找到 {data.totalResults} 部相關電影
+          {t('searchResults.found', { count: data.totalResults })}
         </p>
       )}
       <MovieGrid
@@ -30,7 +32,7 @@ export function SearchResults({ query }: SearchResultsProps) {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         onLoadMore={() => fetchNextPage()}
-        emptyMessage={`找不到「${debouncedQuery}」的相關電影`}
+        emptyMessage={t('searchResults.notFound', { query: debouncedQuery })}
       />
     </div>
   )

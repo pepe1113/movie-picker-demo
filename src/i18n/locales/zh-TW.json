@@ -112,9 +112,43 @@
       "cancel": "取消",
       "confirm": "確定清空"
     },
-    "cleared": "已清空收藏清單"
+    "cleared": "已清空收藏清單",
+    "button": {
+      "add": "加入收藏",
+      "added": "已收藏",
+      "addedToast": "已加入收藏「{{title}}」",
+      "removedToast": "已從收藏移除「{{title}}」"
+    },
+    "empty": {
+      "title": "收藏清單是空的",
+      "description": "開始探索電影，將喜歡的電影加入收藏吧！",
+      "explore": "探索電影"
+    }
   },
   "errors": {
     "loadFailed": "載入失敗，請稍後再試"
+  },
+  "movieCard": {
+    "noOverview": "暫無簡介"
+  },
+  "searchBar": {
+    "placeholder": "搜尋電影名稱...",
+    "clear": "清除"
+  },
+  "movieSection": {
+    "viewMore": "查看更多"
+  },
+  "searchResults": {
+    "found": "找到 {{count}} 部相關電影",
+    "notFound": "找不到「{{query}}」的相關電影"
+  },
+  "filterChips": {
+    "label": "篩選條件：",
+    "yearFrom": "從 {{year}} 年",
+    "yearTo": "到 {{year}} 年",
+    "ratingAbove": "{{rating}} 分以上"
+  },
+  "movieGrid": {
+    "noMovies": "找不到任何電影"
   }
 }
