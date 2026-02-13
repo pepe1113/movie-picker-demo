@@ -12,9 +12,6 @@ import type {
 
 const tmdbClient = axios.create({
   baseURL: TMDB_BASE_URL,
-  params: {
-    language: 'zh-TW',
-  },
   headers: {
     Authorization: `Bearer ${import.meta.env.VITE_TMDB_ACCESS_TOKEN}`,
   },
@@ -22,32 +19,32 @@ const tmdbClient = axios.create({
 
 // --- 電影列表 ---
 
-export async function getTrendingMovies(page = 1) {
+export async function getTrendingMovies(page = 1, language = 'zh-TW') {
   const { data } = await tmdbClient.get<MovieListResponse>(ENDPOINTS.TRENDING, {
-    params: { page },
+    params: { page, language },
   })
   return data
 }
 
-export async function getPopularMovies(page = 1) {
+export async function getPopularMovies(page = 1, language = 'zh-TW') {
   const { data } = await tmdbClient.get<MovieListResponse>(ENDPOINTS.POPULAR, {
-    params: { page },
+    params: { page, language },
   })
   return data
 }
 
-export async function getTopRatedMovies(page = 1) {
+export async function getTopRatedMovies(page = 1, language = 'zh-TW') {
   const { data } = await tmdbClient.get<MovieListResponse>(
     ENDPOINTS.TOP_RATED,
-    { params: { page } },
+    { params: { page, language } },
   )
   return data
 }
 
-export async function getNowPlayingMovies(page = 1) {
+export async function getNowPlayingMovies(page = 1, language = 'zh-TW') {
   const { data } = await tmdbClient.get<MovieListResponse>(
     ENDPOINTS.NOW_PLAYING,
-    { params: { page } },
+    { params: { page, language } },
   )
   return data
 }

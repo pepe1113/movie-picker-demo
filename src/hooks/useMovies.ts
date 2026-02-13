@@ -5,14 +5,15 @@ import {
   getTopRatedMovies,
   getNowPlayingMovies,
 } from '@/services/tmdb/api'
-import { QUERY_KEYS } from '@/utils/constants'
+import { QUERY_KEYS, TMDB_LANGUAGE_MAP } from '@/utils/constants'
+import { useLanguageStore } from '@/stores/languageStore'
 import type { MovieListResponse } from '@/services/tmdb/types'
 
 type MovieListType = 'trending' | 'popular' | 'top_rated' | 'now_playing'
 
 const fetcherMap: Record<
   MovieListType,
-  (page: number) => Promise<MovieListResponse>
+  (page: number, language?: string) => Promise<MovieListResponse>
 > = {
   trending: getTrendingMovies,
   popular: getPopularMovies,
@@ -28,9 +29,11 @@ const queryKeyMap: Record<MovieListType, () => readonly string[]> = {
 }
 
 export function useMovies(type: MovieListType) {
+  const language = useLanguageStore((state) => state.language)
+
   return useInfiniteQuery({
-    queryKey: queryKeyMap[type](),
-    queryFn: ({ pageParam }) => fetcherMap[type](pageParam),
+    queryKey: [...queryKeyMap[type](), language],
+    queryFn: ({ pageParam }) => fetcherMap[type](pageParam, TMDB_LANGUAGE_MAP[language]),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,

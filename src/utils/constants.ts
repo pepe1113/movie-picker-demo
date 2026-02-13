@@ -34,6 +34,11 @@ export const QUERY_KEYS = {
   genres: ['genres'] as const,
 } as const
 
+export const TMDB_LANGUAGE_MAP = {
+  'zh-TW': 'zh-TW',
+  'en': 'en-US'
+} as const
+
 export const ROUTES = {
   HOME: '/',
   MOVIE_DETAIL: (id: number | string) => `/movie/${id}`,
