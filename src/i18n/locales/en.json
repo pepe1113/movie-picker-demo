@@ -5,7 +5,9 @@
     "login": "Login",
     "logout": "Logout",
     "user": "User",
-    "menu": "Menu"
+    "menu": "Menu",
+    "loading": "Loading...",
+    "noResults": "No results found"
   },
   "nav": {
     "home": "Home",
