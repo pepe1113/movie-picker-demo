@@ -63,6 +63,24 @@
     "loadMore": "載入更多",
     "loading": "載入中..."
   },
+  "filter": {
+    "sortBy": "排序方式",
+    "genres": "類型",
+    "year": "年份",
+    "minRating": "最低評分",
+    "yearFrom": "從",
+    "yearTo": "到",
+    "ratingAbove": "{{rating}} 分以上",
+    "resetFilters": "重置篩選",
+    "sortOptions": {
+      "popularityDesc": "熱門度 (高→低)",
+      "popularityAsc": "熱門度 (低→高)",
+      "ratingDesc": "評分 (高→低)",
+      "ratingAsc": "評分 (低→高)",
+      "releaseDateDesc": "上映日期 (新→舊)",
+      "releaseDateAsc": "上映日期 (舊→新)"
+    }
+  },
   "movieDetail": {
     "notFound": "找不到這部電影",
     "backToHome": "回到首頁",

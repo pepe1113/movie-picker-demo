@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { RotateCcw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -14,15 +15,6 @@ import { useFilterStore } from '@/stores/filterStore'
 import { QUERY_KEYS } from '@/utils/constants'
 import type { SortBy } from '@/types/filter'
 
-const SORT_OPTIONS: { value: SortBy; label: string }[] = [
-  { value: 'popularity.desc', label: '熱門度 (高→低)' },
-  { value: 'popularity.asc', label: '熱門度 (低→高)' },
-  { value: 'vote_average.desc', label: '評分 (高→低)' },
-  { value: 'vote_average.asc', label: '評分 (低→高)' },
-  { value: 'primary_release_date.desc', label: '上映日期 (新→舊)' },
-  { value: 'primary_release_date.asc', label: '上映日期 (舊→新)' },
-]
-
 const YEAR_OPTIONS = (() => {
   const currentYear = new Date().getFullYear()
   const years: number[] = []
@@ -35,6 +27,7 @@ const YEAR_OPTIONS = (() => {
 const RATING_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export function FilterPanel() {
+  const { t } = useTranslation()
   const {
     genres: selectedGenres,
     year,
@@ -53,11 +46,26 @@ export function FilterPanel() {
     queryFn: getGenres,
   })
 
+  const SORT_OPTIONS: { value: SortBy; label: string }[] = [
+    { value: 'popularity.desc', label: t('filter.sortOptions.popularityDesc') },
+    { value: 'popularity.asc', label: t('filter.sortOptions.popularityAsc') },
+    { value: 'vote_average.desc', label: t('filter.sortOptions.ratingDesc') },
+    { value: 'vote_average.asc', label: t('filter.sortOptions.ratingAsc') },
+    {
+      value: 'primary_release_date.desc',
+      label: t('filter.sortOptions.releaseDateDesc'),
+    },
+    {
+      value: 'primary_release_date.asc',
+      label: t('filter.sortOptions.releaseDateAsc'),
+    },
+  ]
+
   return (
     <div className="space-y-6">
       {/* 排序 */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">排序方式</h4>
+        <h4 className="text-sm font-medium">{t('filter.sortBy')}</h4>
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
           <SelectTrigger className="w-full">
             <SelectValue />
@@ -74,7 +82,7 @@ export function FilterPanel() {
 
       {/* 類型 */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">類型</h4>
+        <h4 className="text-sm font-medium">{t('filter.genres')}</h4>
         <div className="flex flex-wrap gap-2">
           {genres.map((genre) => (
             <Badge
@@ -93,7 +101,7 @@ export function FilterPanel() {
 
       {/* 年份 */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">年份</h4>
+        <h4 className="text-sm font-medium">{t('filter.year')}</h4>
         <div className="flex items-center gap-2">
           <Select
             value={year.from?.toString() ?? ''}
@@ -106,7 +114,7 @@ export function FilterPanel() {
             }}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="從" />
+              <SelectValue placeholder={t('filter.yearFrom')} />
             </SelectTrigger>
             <SelectContent>
               {YEAR_OPTIONS.map((y) => (
@@ -124,7 +132,7 @@ export function FilterPanel() {
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="到" />
+              <SelectValue placeholder={t('filter.yearTo')} />
             </SelectTrigger>
             <SelectContent>
               {YEAR_OPTIONS.filter((y) => !year.from || y >= year.from).map(
@@ -141,7 +149,7 @@ export function FilterPanel() {
 
       {/* 最低評分 */}
       <div className="space-y-2">
-        <h4 className="text-sm font-medium">最低評分</h4>
+        <h4 className="text-sm font-medium">{t('filter.minRating')}</h4>
         <Select
           value={rating.min.toString()}
           onValueChange={(v) => setRating({ ...rating, min: Number(v) })}
@@ -152,7 +160,7 @@ export function FilterPanel() {
           <SelectContent>
             {RATING_OPTIONS.map((r) => (
               <SelectItem key={r} value={r.toString()}>
-                {r} 分以上
+                {t('filter.ratingAbove', { rating: r })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -163,7 +171,7 @@ export function FilterPanel() {
       {hasActiveFilters() && (
         <Button variant="outline" className="w-full" onClick={resetFilters}>
           <RotateCcw className="size-4" />
-          重置篩選
+          {t('filter.resetFilters')}
         </Button>
       )}
     </div>

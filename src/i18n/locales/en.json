@@ -63,6 +63,24 @@
     "loadMore": "Load More",
     "loading": "Loading..."
   },
+  "filter": {
+    "sortBy": "Sort By",
+    "genres": "Genres",
+    "year": "Year",
+    "minRating": "Minimum Rating",
+    "yearFrom": "From",
+    "yearTo": "To",
+    "ratingAbove": "{{rating}}+ rating",
+    "resetFilters": "Reset Filters",
+    "sortOptions": {
+      "popularityDesc": "Popularity (High to Low)",
+      "popularityAsc": "Popularity (Low to High)",
+      "ratingDesc": "Rating (High to Low)",
+      "ratingAsc": "Rating (Low to High)",
+      "releaseDateDesc": "Release Date (Newest)",
+      "releaseDateAsc": "Release Date (Oldest)"
+    }
+  },
   "movieDetail": {
     "notFound": "Movie Not Found",
     "backToHome": "Back to Home",
