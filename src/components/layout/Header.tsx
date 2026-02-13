@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Languages,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -29,19 +30,20 @@ import { useAuthStore } from '@/stores/authStore'
 import { useLanguageStore } from '@/stores/languageStore'
 import { ROUTES } from '@/utils/constants'
 
-const NAV_ITEMS = [
-  { label: '首頁', href: ROUTES.HOME, icon: Film },
-  { label: 'Top 100', href: '/top100', icon: TrendingUp },
-  { label: '隨機挑片', href: '/random', icon: Dice5 },
-  { label: '收藏清單', href: ROUTES.WISHLIST, icon: Heart },
-]
-
 export function Header() {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { isAuthenticated, user, signIn, signOut } = useAuthStore()
   const { language, setLanguage } = useLanguageStore()
+
+  const NAV_ITEMS = [
+    { label: t('nav.home'), href: ROUTES.HOME, icon: Film },
+    { label: t('nav.top100'), href: '/top100', icon: TrendingUp },
+    { label: t('nav.random'), href: '/random', icon: Dice5 },
+    { label: t('nav.wishlist'), href: ROUTES.WISHLIST, icon: Heart },
+  ]
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,7 +84,7 @@ export function Header() {
             <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
             <Input
               type="search"
-              placeholder="搜尋電影..."
+              placeholder={t('common.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -117,13 +119,13 @@ export function Header() {
             <Button variant="ghost" size="sm" onClick={() => signOut()}>
               <User className="size-4" />
               <span className="hidden sm:inline">
-                {user?.displayName ?? '使用者'}
+                {user?.displayName ?? t('common.user')}
               </span>
             </Button>
           ) : (
             <Button variant="ghost" size="sm" onClick={() => signIn()}>
               <User className="size-4" />
-              <span className="hidden sm:inline">登入</span>
+              <span className="hidden sm:inline">{t('common.login')}</span>
             </Button>
           )}
 
@@ -132,7 +134,7 @@ export function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="size-5" />
-                <span className="sr-only">選單</span>
+                <span className="sr-only">{t('common.menu')}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
@@ -149,7 +151,7 @@ export function Header() {
                   <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
                   <Input
                     type="search"
-                    placeholder="搜尋電影..."
+                    placeholder={t('common.search')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9"
