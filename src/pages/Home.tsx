@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { MovieSection } from '@/components/features/movie/MovieSection'
 import { useMovies } from '@/hooks/useMovies'
 
 export function Component() {
+  const { t } = useTranslation()
   const trending = useMovies('trending')
   const popular = useMovies('popular')
   const topRated = useMovies('top_rated')
@@ -34,29 +36,24 @@ export function Component() {
 
             {/* Main headline - Extreme scale */}
             <h1 className="text-5xl font-bold leading-none tracking-tighter text-foreground md:text-6xl lg:text-7xl xl:text-8xl">
-              發現你的
-              <br />
-              下一部
-              <br />
-              <span className="text-accent">經典電影</span>
+              {t('home.hero.title')}
             </h1>
 
             {/* Subtitle - Generous spacing */}
             <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-              從熱門大片到經典佳作，讓我們幫你找到完美的觀影選擇。
-              智能推薦系統與隨機挑片功能，解決你的選擇困難。
+              {t('home.hero.subtitle')}
             </p>
 
             {/* CTA Buttons - Underline style */}
             <div className="flex flex-wrap gap-6 pt-4">
               <Button size="lg" asChild>
                 <Link to="/random">
-                  開始隨機挑片
+                  {t('home.hero.ctaRandom')}
                   <ArrowRight className="size-5" />
                 </Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
-                <Link to="/top100">瀏覽 TOP 100</Link>
+                <Link to="/top100">{t('home.hero.ctaTop100')}</Link>
               </Button>
             </div>
           </motion.div>
@@ -67,7 +64,7 @@ export function Component() {
       <div className="container mx-auto space-y-28 px-6 py-28 md:space-y-40 md:px-12 md:py-40 lg:px-16">
         {/* Trending Section */}
         <MovieSection
-          title="本週趨勢"
+          title={t('home.sections.trending')}
           movies={trending.data?.movies ?? []}
           isLoading={trending.isLoading}
           limit={12}
@@ -76,7 +73,7 @@ export function Component() {
 
         {/* Popular Section */}
         <MovieSection
-          title="熱門電影"
+          title={t('home.sections.popular')}
           movies={popular.data?.movies ?? []}
           isLoading={popular.isLoading}
           limit={12}
@@ -85,12 +82,12 @@ export function Component() {
 
         {/* Top Rated Section */}
         <MovieSection
-          title="高評分電影"
+          title={t('home.sections.topRated')}
           movies={topRated.data?.movies ?? []}
           isLoading={topRated.isLoading}
           limit={12}
           moreLink="/top100"
-          moreLinkText="查看完整 TOP 100"
+          moreLinkText={t('home.sections.viewAll')}
           sectionNumber="04"
         />
       </div>
