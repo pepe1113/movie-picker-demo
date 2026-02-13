@@ -33,6 +33,36 @@
     "tmdbDisclaimer": "本產品使用 TMDB API，但未經 TMDB 認可或認證。",
     "copyright": "Movie Picker"
   },
+  "random": {
+    "title": "隨機挑片",
+    "subtitle": "選擇障礙救星！讓命運幫你決定今晚看什麼。從完全隨機到條件篩選，找到你的完美觀影選擇。",
+    "modes": {
+      "random": "完全隨機",
+      "filtered": "條件篩選"
+    },
+    "descriptions": {
+      "random": "從熱門電影中隨機挑選 3 部",
+      "filtered": "設定你的偏好條件"
+    },
+    "buttons": {
+      "roll": "開始挑片",
+      "rollAgain": "再搖一次"
+    },
+    "results": {
+      "title": "你的隨機選擇"
+    },
+    "noResults": {
+      "title": "找不到符合條件的電影",
+      "description": "試著調整篩選條件，再搖一次骰子吧！"
+    },
+    "initial": "按下按鈕，讓命運幫你決定今晚看什麼！"
+  },
+  "top100": {
+    "title": "Top 100 電影",
+    "subtitle": "影迷票選最高評分電影",
+    "loadMore": "載入更多",
+    "loading": "載入中..."
+  },
   "wishlist": {
     "title": "收藏清單",
     "stats": {

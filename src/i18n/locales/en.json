@@ -33,6 +33,36 @@
     "tmdbDisclaimer": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "copyright": "Movie Picker"
   },
+  "random": {
+    "title": "Random Pick",
+    "subtitle": "Can't decide? Let fate choose for you! From completely random to filtered picks, find your perfect movie tonight.",
+    "modes": {
+      "random": "Fully Random",
+      "filtered": "With Filters"
+    },
+    "descriptions": {
+      "random": "Pick 3 random movies from popular titles",
+      "filtered": "Set your preferences"
+    },
+    "buttons": {
+      "roll": "Roll the Dice",
+      "rollAgain": "Roll Again"
+    },
+    "results": {
+      "title": "Your Random Picks"
+    },
+    "noResults": {
+      "title": "No movies match your criteria",
+      "description": "Try adjusting your filters and roll again!"
+    },
+    "initial": "Hit the button and let fate decide what to watch tonight!"
+  },
+  "top100": {
+    "title": "Top 100 Movies",
+    "subtitle": "Highest rated movies by film lovers",
+    "loadMore": "Load More",
+    "loading": "Loading..."
+  },
   "wishlist": {
     "title": "Wishlist",
     "stats": {

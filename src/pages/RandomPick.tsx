@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Dice5, Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -19,6 +20,7 @@ function pickRandom(movies: Movie[], count: number): Movie[] {
 }
 
 export function Component() {
+  const { t } = useTranslation()
   const [mode, setMode] = useState<'random' | 'filtered'>('random')
   const [picks, setPicks] = useState<Movie[]>([])
   const [hasRolled, setHasRolled] = useState(false)
@@ -104,13 +106,12 @@ export function Component() {
 
             {/* Main headline */}
             <h1 className="text-5xl leading-none font-bold tracking-tighter md:text-6xl lg:text-7xl xl:text-8xl">
-              隨機挑片
+              {t('random.title')}
             </h1>
 
             {/* Subtitle */}
             <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed md:text-xl">
-              選擇障礙救星！讓命運幫你決定今晚看什麼。
-              從完全隨機到條件篩選，找到你的完美觀影選擇。
+              {t('random.subtitle')}
             </p>
           </motion.div>
         </div>
@@ -130,13 +131,13 @@ export function Component() {
                   value="random"
                   className="text-sm tracking-widest uppercase"
                 >
-                  完全隨機
+                  {t('random.modes.random')}
                 </TabsTrigger>
                 <TabsTrigger
                   value="filtered"
                   className="text-sm tracking-widest uppercase"
                 >
-                  條件篩選
+                  {t('random.modes.filtered')}
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -150,7 +151,7 @@ export function Component() {
                     aria-hidden="true"
                   />
                   <p className="text-muted-foreground font-mono text-sm tracking-wide uppercase">
-                    從熱門電影中隨機挑選 3 部
+                    {t('random.descriptions.random')}
                   </p>
                 </div>
               </div>
@@ -165,7 +166,7 @@ export function Component() {
                     aria-hidden="true"
                   />
                   <p className="text-muted-foreground font-mono text-sm tracking-wide uppercase">
-                    設定你的偏好條件
+                    {t('random.descriptions.filtered')}
                   </p>
                 </div>
                 <div className="mx-auto max-w-md">
@@ -196,7 +197,9 @@ export function Component() {
               >
                 <Dice5 className="size-8" />
               </motion.div>
-              {hasRolled ? '再搖一次' : '開始挑片'}
+              {hasRolled
+                ? t('random.buttons.rollAgain')
+                : t('random.buttons.roll')}
             </Button>
           </div>
 
@@ -226,7 +229,7 @@ export function Component() {
                       aria-hidden="true"
                     />
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                      你的隨機選擇
+                      {t('random.results.title')}
                     </h2>
                   </div>
 
@@ -292,10 +295,10 @@ export function Component() {
               <div className="text-8xl">🎬</div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold tracking-tight">
-                  找不到符合條件的電影
+                  {t('random.noResults.title')}
                 </h3>
                 <p className="text-muted-foreground">
-                  試著調整篩選條件，再搖一次骰子吧！
+                  {t('random.noResults.description')}
                 </p>
               </div>
             </div>
@@ -305,7 +308,7 @@ export function Component() {
           {!hasRolled && !isLoading && !noResults && (
             <div className="text-muted-foreground space-y-6 py-20 text-center">
               <Dice5 className="mx-auto size-24 stroke-1" />
-              <p className="text-lg">按下按鈕，讓命運幫你決定今晚看什麼！</p>
+              <p className="text-lg">{t('random.initial')}</p>
             </div>
           )}
         </div>

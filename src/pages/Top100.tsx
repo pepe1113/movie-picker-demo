@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { WishlistButton } from '@/components/features/wishlist/WishlistButton'
@@ -9,6 +10,7 @@ import { getPosterUrl, formatRating, formatYear } from '@/utils/helpers'
 import { ROUTES } from '@/utils/constants'
 
 export function Component() {
+  const { t } = useTranslation()
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useMovies('top_rated')
 
@@ -17,8 +19,8 @@ export function Component() {
   return (
     <div className="container mx-auto space-y-6 px-4 py-8">
       <div>
-        <h1 className="text-3xl font-bold">Top 100 電影</h1>
-        <p className="text-muted-foreground mt-1">影迷票選最高評分電影</p>
+        <h1 className="text-3xl font-bold">{t('top100.title')}</h1>
+        <p className="text-muted-foreground mt-1">{t('top100.subtitle')}</p>
       </div>
 
       {isLoading ? (
@@ -88,7 +90,7 @@ export function Component() {
             disabled={isFetchingNextPage}
             className="text-muted-foreground hover:text-foreground text-sm underline"
           >
-            {isFetchingNextPage ? '載入中...' : '載入更多'}
+            {isFetchingNextPage ? t('top100.loading') : t('top100.loadMore')}
           </button>
         </div>
       )}
