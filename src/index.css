@@ -103,6 +103,7 @@
     letter-spacing: -0.01em;
     background-color: var(--background);
     color: var(--foreground);
+    white-space: pre-line;
   }
 
   /* Subtle noise texture overlay for tactile quality */
