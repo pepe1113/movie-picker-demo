@@ -17,17 +17,6 @@ A modern movie recommendation web app that helps you overcome choice paralysis. 
 
 **API Limitation**: Uses TMDB API with rate limits - not intended for public deployment or distribution.
 
-## 📸 Screenshots
-
-> Screenshots will be added here
-
-<!-- Placeholder for:
-- Home page with popular movies grid
-- Random pick feature with filtering options
-- Movie detail page with information
-- Personal wishlist collection
--->
-
 ## ✨ Features
 
 - 🎲 **Random Pick** - Random movie selection with optional filters (genre, year, rating)
