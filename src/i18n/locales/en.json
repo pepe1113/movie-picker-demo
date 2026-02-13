@@ -1,0 +1,37 @@
+{
+  "common": {
+    "appName": "Movie Picker",
+    "search": "Search movies...",
+    "login": "Login",
+    "logout": "Logout",
+    "user": "User",
+    "menu": "Menu"
+  },
+  "nav": {
+    "home": "Home",
+    "top100": "Top 100",
+    "random": "Random Pick",
+    "wishlist": "Wishlist"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover Your Next Classic Movie",
+      "subtitle": "From blockbusters to classics, let us help you find the perfect movie. Smart recommendations and random picks to solve your choice paralysis.",
+      "ctaRandom": "Start Random Pick",
+      "ctaTop100": "Browse TOP 100"
+    },
+    "sections": {
+      "trending": "Trending This Week",
+      "popular": "Popular Movies",
+      "topRated": "Top Rated Movies",
+      "viewAll": "View Full TOP 100"
+    }
+  },
+  "footer": {
+    "tmdbDisclaimer": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "copyright": "Movie Picker"
+  },
+  "errors": {
+    "loadFailed": "Failed to load, please try again later"
+  }
+}
