@@ -1,5 +1,6 @@
 import { Star, Clock, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -16,6 +17,7 @@ import { useWishlistStore } from '@/stores/wishlistStore'
 import { formatRating } from '@/utils/helpers'
 
 export function Component() {
+  const { t } = useTranslation()
   const { wishlist, clearWishlist } = useWishlistStore()
 
   const avgRating =
@@ -25,22 +27,23 @@ export function Component() {
 
   const handleClear = () => {
     clearWishlist()
-    toast.success('已清空收藏清單')
+    toast.success(t('wishlist.cleared'))
   }
 
   return (
     <div className="container mx-auto space-y-6 px-4 py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">收藏清單</h1>
+          <h1 className="text-3xl font-bold">{t('wishlist.title')}</h1>
           {wishlist.length > 0 && (
             <div className="text-muted-foreground mt-2 flex items-center gap-4 text-sm">
               <span className="flex items-center gap-1">
-                <Clock className="size-4" />共 {wishlist.length} 部電影
+                <Clock className="size-4" />
+                {t('wishlist.stats.movieCount', { count: wishlist.length })}
               </span>
               <span className="flex items-center gap-1">
                 <Star className="size-4" />
-                平均評分 {formatRating(avgRating)}
+                {t('wishlist.stats.avgRating')} {formatRating(avgRating)}
               </span>
             </div>
           )}
@@ -51,23 +54,27 @@ export function Component() {
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
                 <Trash2 className="size-4" />
-                清空收藏
+                {t('wishlist.clearButton')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>確定要清空收藏清單？</DialogTitle>
+                <DialogTitle>{t('wishlist.clearDialog.title')}</DialogTitle>
                 <DialogDescription>
-                  這會移除所有 {wishlist.length} 部收藏的電影，此操作無法復原。
+                  {t('wishlist.clearDialog.description', {
+                    count: wishlist.length,
+                  })}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="outline">取消</Button>
+                  <Button variant="outline">
+                    {t('wishlist.clearDialog.cancel')}
+                  </Button>
                 </DialogClose>
                 <DialogClose asChild>
                   <Button variant="destructive" onClick={handleClear}>
-                    確定清空
+                    {t('wishlist.clearDialog.confirm')}
                   </Button>
                 </DialogClose>
               </DialogFooter>

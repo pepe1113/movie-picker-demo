@@ -33,6 +33,21 @@
     "tmdbDisclaimer": "本產品使用 TMDB API，但未經 TMDB 認可或認證。",
     "copyright": "Movie Picker"
   },
+  "wishlist": {
+    "title": "收藏清單",
+    "stats": {
+      "movieCount": "共 {{count}} 部電影",
+      "avgRating": "平均評分"
+    },
+    "clearButton": "清空收藏",
+    "clearDialog": {
+      "title": "確定要清空收藏清單？",
+      "description": "這會移除所有 {{count}} 部收藏的電影，此操作無法復原。",
+      "cancel": "取消",
+      "confirm": "確定清空"
+    },
+    "cleared": "已清空收藏清單"
+  },
   "errors": {
     "loadFailed": "載入失敗，請稍後再試"
   }

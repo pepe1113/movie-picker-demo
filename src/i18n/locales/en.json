@@ -33,6 +33,21 @@
     "tmdbDisclaimer": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "copyright": "Movie Picker"
   },
+  "wishlist": {
+    "title": "Wishlist",
+    "stats": {
+      "movieCount": "{{count}} movies",
+      "avgRating": "Average Rating"
+    },
+    "clearButton": "Clear All",
+    "clearDialog": {
+      "title": "Clear your wishlist?",
+      "description": "This will remove all {{count}} movies from your wishlist. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Clear All"
+    },
+    "cleared": "Wishlist cleared"
+  },
   "errors": {
     "loadFailed": "Failed to load, please try again later"
   }
