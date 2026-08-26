@@ -128,9 +128,7 @@ describe('context-aware recommendation domain', () => {
           ...plan,
           soft_preferences: {
             ...plan.soft_preferences,
-            include_genres: [
-              { name: 'action_adventure', source: 'explicit' },
-            ],
+            include_genres: [{ name: 'action_adventure', source: 'explicit' }],
           },
         },
         'movie',
@@ -143,9 +141,7 @@ describe('context-aware recommendation domain', () => {
           hard_constraints: { exclude_genres: [] },
           soft_preferences: {
             ...plan.soft_preferences,
-            include_genres: [
-              { name: 'action_adventure', source: 'explicit' },
-            ],
+            include_genres: [{ name: 'action_adventure', source: 'explicit' }],
           },
         },
         'tv',
@@ -160,6 +156,8 @@ describe('context-aware recommendation domain', () => {
       discoverPlan,
       [123],
       'popularity.desc',
+      true,
+      [456],
     )
     const relaxed = buildDiscoverSearchParams(
       'movie',
@@ -171,6 +169,7 @@ describe('context-aware recommendation domain', () => {
 
     expect(precise.get('with_genres')).toBe('35')
     expect(precise.get('with_keywords')).toBe('123')
+    expect(precise.get('without_keywords')).toBe('456')
     expect(relaxed.get('with_genres')).toBe('35')
     expect(relaxed.has('with_keywords')).toBe(false)
     expect(relaxed.get('without_genres')).toBe('27')
@@ -179,7 +178,7 @@ describe('context-aware recommendation domain', () => {
     expect(relaxed.get('vote_count.gte')).toBe('100')
   })
 
-  it('deterministically routes light Japanese drama and Japanese animation', () => {
+  it('deterministically routes short movies, Japanese live-action drama, and animation', () => {
     const base = parseContextPlan(
       {
         ...plan,
@@ -194,7 +193,7 @@ describe('context-aware recommendation domain', () => {
     )
     const drama = applyDeterministicMediaRules(
       {
-        request: '我想看點題材輕鬆的日劇',
+        request: '我想看輕鬆的日本真人影集',
         locale: 'zh-TW',
         media_type: 'tv',
       },
@@ -211,6 +210,74 @@ describe('context-aware recommendation domain', () => {
     expect(params.get('without_genres')).toBe('16')
     expect(params.get('with_genres')).toBe('35')
     expect(params.get('vote_count.gte')).toBe('30')
+
+    const shortMovie = applyDeterministicMediaRules(
+      {
+        request: '好笑的，短一點的電影',
+        locale: 'zh-TW',
+        media_type: 'movie',
+      },
+      parseContextPlan(
+        {
+          ...plan,
+          hard_constraints: { exclude_genres: ['drama'] },
+          soft_preferences: {
+            include_genres: [{ name: 'comedy', source: 'explicit' }],
+            keywords: [],
+            qualities: [],
+          },
+        },
+        'movie',
+      ),
+    )
+    const shortParams = buildDiscoverSearchParams(
+      'movie',
+      shortMovie.discover_plan,
+      [],
+      'popularity.desc',
+    )
+    expect(shortParams.get('with_runtime.gte')).toBe('60')
+    expect(shortParams.get('with_runtime.lte')).toBe('90')
+    expect(shortParams.has('without_genres')).toBe(false)
+    expect(shortMovie.display_labels.hard).toEqual(['60–90 分鐘'])
+
+    const thriller = applyDeterministicMediaRules(
+      {
+        request:
+          'I want a Korean thriller series from 2020 or later, but no horror.',
+        locale: 'en',
+        media_type: 'tv',
+      },
+      parseContextPlan(
+        {
+          ...plan,
+          hard_constraints: {
+            exclude_genres: ['action_adventure', 'animation', 'comedy'],
+          },
+          soft_preferences: {
+            include_genres: [
+              { name: 'crime', source: 'explicit' },
+              { name: 'drama', source: 'explicit' },
+              { name: 'mystery', source: 'explicit' },
+            ],
+            keywords: [],
+            qualities: [],
+          },
+        },
+        'tv',
+      ),
+    )
+    expect(thriller.hard_constraints.exclude_genre_ids).toEqual([])
+    expect(thriller.hard_constraints.exclude_keywords).toContainEqual({
+      lookup_name: 'horror',
+      display_label: 'No horror',
+    })
+    expect(thriller.soft_preferences.include_genres).toEqual([])
+    expect(thriller.soft_preferences.keywords).toContainEqual({
+      lookup_name: 'thriller',
+      display_label: 'Thriller',
+      source: 'explicit',
+    })
 
     const anime = applyDeterministicMediaRules(
       {
@@ -266,6 +333,11 @@ describe('context-aware recommendation domain', () => {
     expect(includeGenreItem.properties).toHaveProperty('name')
     expect(includeGenreItem.properties).not.toHaveProperty('id')
     expect(includeGenreItem.properties.name.enum).toContain('action_adventure')
+    expect(createPlanTool('tv').function.strict).toBe(true)
+    expect(
+      createPlanTool('tv').function.parameters.properties.hard_constraints
+        .required,
+    ).toContain('exclude_keywords')
   })
 
   it('extracts only the forced planning tool arguments', () => {

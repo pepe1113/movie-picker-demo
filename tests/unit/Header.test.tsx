@@ -38,7 +38,7 @@ describe('Header', () => {
           uid: 'user-1',
           email: 'ada@example.com',
           displayName: 'Ada Lovelace',
-          photoURL: null,
+          photoURL: 'https://example.com/avatar.png',
         },
         isAuthenticated: true,
         isLoading: false,
@@ -50,6 +50,10 @@ describe('Header', () => {
     renderHeader()
 
     expect(
+      screen.getByRole('img', { name: 'Ada Lovelace avatar' }),
+    ).toHaveClass('rounded-full')
+
+    expect(
       screen.queryByRole('button', { name: /Ada Lovelace/ }),
     ).not.toBeInTheDocument()
 
@@ -58,5 +62,19 @@ describe('Header', () => {
 
     await user.click(screen.getByRole('button', { name: /登出/ }))
     expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('offers GitHub and Google sign-in', async () => {
+    const user = userEvent.setup()
+    const signIn = vi.fn()
+    act(() => {
+      useAuthStore.setState({ signIn })
+    })
+
+    renderHeader()
+    await user.click(screen.getByRole('button', { name: '登入' }))
+    await user.click(screen.getByText('使用 Google 登入'))
+
+    expect(signIn).toHaveBeenCalledWith('google')
   })
 })

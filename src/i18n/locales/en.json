@@ -3,6 +3,8 @@
     "appName": "Movie Picker",
     "search": "Search movies and series...",
     "login": "Login",
+    "loginWithGithub": "Continue with GitHub",
+    "loginWithGoogle": "Continue with Google",
     "logout": "Logout",
     "user": "User",
     "menu": "Menu",

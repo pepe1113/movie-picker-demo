@@ -369,6 +369,54 @@ describe('recommendation orchestrator', () => {
     ).toBe(true)
   })
 
+  it('resolves an excluded TV concept and sends without_keywords to Discover', async () => {
+    const discoverUrls: string[] = []
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const url = String(input)
+      if (url.includes('/chat/completions')) {
+        return toolCall(
+          basePlan({
+            hard_constraints: {
+              exclude_genres: [],
+              exclude_keywords: [
+                { lookup_name: 'horror', display_label: 'No horror' },
+              ],
+            },
+          }),
+        )
+      }
+      if (url.includes('/search/keyword')) {
+        const query = new URL(url).searchParams.get('query')
+        return json({
+          results: [
+            query === 'horror'
+              ? { id: 12339, name: 'horror' }
+              : { id: 999, name: 'thriller' },
+          ],
+        })
+      }
+      discoverUrls.push(url)
+      return json({ results: [tv(1)] })
+    })
+
+    await coordinateRecommendations(
+      {
+        request: 'I want a thriller series, but no horror.',
+        locale: 'en',
+        media_type: 'tv',
+      },
+      config,
+      new AbortController().signal,
+      fetcher,
+    )
+
+    expect(
+      discoverUrls.every(
+        (url) => new URL(url).searchParams.get('without_keywords') === '12339',
+      ),
+    ).toBe(true)
+  })
+
   it('returns a correctable condition error for an unresolved explicit keyword', async () => {
     const fetcher = vi.fn<typeof fetch>(async (input) => {
       const url = String(input)

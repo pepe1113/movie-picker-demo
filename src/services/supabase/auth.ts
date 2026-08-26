@@ -5,40 +5,67 @@ import { getSupabaseClient } from './client'
 let testAuthClient: unknown | null = null
 
 function getAuthClient() {
-  return (testAuthClient as ReturnType<typeof getSupabaseClient> | null) ?? getSupabaseClient()
+  return (
+    (testAuthClient as ReturnType<typeof getSupabaseClient> | null) ??
+    getSupabaseClient()
+  )
 }
 
 export function setSupabaseAuthClientForTesting(client: unknown | null) {
   testAuthClient = client
 }
 
+function firstString(...values: unknown[]) {
+  return (
+    values.find(
+      (value): value is string =>
+        typeof value === 'string' && value.trim().length > 0,
+    ) ?? null
+  )
+}
+
 export function mapSupabaseUser(user: SupabaseUser): User {
   const metadata = user.user_metadata
+  const identityMetadata =
+    user.identities?.map((identity) => identity.identity_data) ?? []
 
   return {
     uid: user.id,
     email: user.email ?? null,
-    displayName:
-      typeof metadata.full_name === 'string'
-        ? metadata.full_name
-        : typeof metadata.name === 'string'
-          ? metadata.name
-          : typeof metadata.user_name === 'string'
-            ? metadata.user_name
-            : null,
-    photoURL:
-      typeof metadata.avatar_url === 'string' ? metadata.avatar_url : null,
+    displayName: firstString(
+      metadata.full_name,
+      metadata.name,
+      metadata.user_name,
+      ...identityMetadata.flatMap((identity) => [
+        identity?.full_name,
+        identity?.name,
+        identity?.user_name,
+      ]),
+    ),
+    photoURL: firstString(
+      metadata.avatar_url,
+      metadata.picture,
+      ...identityMetadata.flatMap((identity) => [
+        identity?.avatar_url,
+        identity?.picture,
+      ]),
+    ),
   }
 }
 
-export async function signInWithGithub() {
+export type AuthProvider = 'github' | 'google'
+
+export async function signInWithProvider(provider: AuthProvider) {
   const redirectTo =
     typeof window === 'undefined' ? undefined : window.location.origin
 
   const { error } = await getAuthClient().auth.signInWithOAuth({
-    provider: 'github',
+    provider,
     options: {
       redirectTo,
+      ...(provider === 'google'
+        ? { queryParams: { prompt: 'select_account' } }
+        : {}),
     },
   })
 

@@ -72,7 +72,10 @@ function genresFor(mediaType: MediaType): Readonly<Record<string, number>> {
 const genreNameSchema = (genres: Readonly<Record<string, number>>) =>
   z
     .string()
-    .refine((value) => Object.hasOwn(genres, value), 'genre name is not allowed')
+    .refine(
+      (value) => Object.hasOwn(genres, value),
+      'genre name is not allowed',
+    )
 
 const providerHardConstraintsSchema = (
   genres: Readonly<Record<string, number>>,
@@ -80,20 +83,74 @@ const providerHardConstraintsSchema = (
   z
     .object({
       exclude_genres: z.array(genreNameSchema(genres)).max(3).default([]),
-      runtime_max: z.number().int().min(1).max(360).optional(),
-      release_year_min: z.number().int().min(1870).max(2100).optional(),
-      release_year_max: z.number().int().min(1870).max(2100).optional(),
+      exclude_keywords: z
+        .array(
+          z
+            .object({
+              lookup_name: z.string().trim().min(1).max(50),
+              display_label: labelSchema,
+            })
+            .strict(),
+        )
+        .max(2)
+        .default([]),
+      runtime_min: z
+        .number()
+        .int()
+        .min(1)
+        .max(360)
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
+      runtime_max: z
+        .number()
+        .int()
+        .min(1)
+        .max(360)
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
+      release_year_min: z
+        .number()
+        .int()
+        .min(1870)
+        .max(2100)
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
+      release_year_max: z
+        .number()
+        .int()
+        .min(1870)
+        .max(2100)
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
       original_language: z
         .string()
         .regex(/^[a-z]{2}$/)
-        .optional(),
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
       origin_country: z
         .string()
         .regex(/^[A-Z]{2}$/)
-        .optional(),
+        .nullable()
+        .optional()
+        .transform((value) => value ?? undefined),
     })
     .strict()
     .superRefine((value, context) => {
+      if (
+        value.runtime_min &&
+        value.runtime_max &&
+        value.runtime_min > value.runtime_max
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'runtime minimum cannot exceed maximum',
+        })
+      }
       if (
         value.release_year_min &&
         value.release_year_max &&
@@ -256,6 +313,8 @@ const creditsSchema = z
 export type RecommendationRequest = z.infer<typeof recommendationRequestSchema>
 export interface HardConstraints {
   exclude_genre_ids: number[]
+  exclude_keywords: Array<{ lookup_name: string; display_label: string }>
+  runtime_min?: number
   runtime_max?: number
   release_year_min?: number
   release_year_max?: number
@@ -292,7 +351,9 @@ export interface ResolvedKeyword extends KeywordPreference {
 export interface DiscoverPlan {
   include_genres: SoftPreferences['include_genres']
   exclude_genre_ids: number[]
+  exclude_keywords: HardConstraints['exclude_keywords']
   keywords: KeywordPreference[]
+  runtime_min?: number
   runtime_max?: number
   release_year_min?: number
   release_year_max?: number
@@ -397,7 +458,9 @@ export function parseContextPlan(
     discover_plan: {
       include_genres: soft.include_genres,
       exclude_genre_ids: hard.exclude_genre_ids,
+      exclude_keywords: hard.exclude_keywords,
       keywords: soft.keywords,
+      runtime_min: hard.runtime_min,
       runtime_max: hard.runtime_max,
       release_year_min: hard.release_year_min,
       release_year_max: hard.release_year_max,
@@ -419,19 +482,185 @@ function addUniqueGenre(
 
 export function applyDeterministicMediaRules(
   request: RecommendationRequest,
-  plan: ContextPlan,
+  originalPlan: ContextPlan,
 ): ContextPlan {
-  if (request.media_type !== 'tv') return plan
+  let plan = originalPlan
+  if (
+    request.locale === 'zh-TW' &&
+    /[\u3040-\u30ff]/u.test(plan.intent_summary)
+  ) {
+    plan = {
+      ...plan,
+      intent_summary:
+        request.media_type === 'movie'
+          ? '符合條件的電影推薦'
+          : '符合條件的劇集推薦',
+    }
+  }
+  if (
+    request.media_type === 'movie' &&
+    /恐怖|ホラー|horror/iu.test(request.request) &&
+    plan.hard_constraints.exclude_genre_ids.length === 1 &&
+    plan.hard_constraints.exclude_genre_ids[0] === 27 &&
+    plan.hard_constraints.exclude_keywords.length === 0 &&
+    plan.hard_constraints.runtime_min === undefined &&
+    plan.hard_constraints.runtime_max === undefined &&
+    plan.hard_constraints.release_year_min === undefined &&
+    plan.hard_constraints.release_year_max === undefined &&
+    plan.hard_constraints.original_language === undefined &&
+    plan.hard_constraints.origin_country === undefined
+  ) {
+    plan = {
+      ...plan,
+      display_labels: {
+        ...plan.display_labels,
+        hard: [request.locale === 'zh-TW' ? '排除恐怖片' : 'No horror'],
+      },
+    }
+  }
+
+  if (request.media_type === 'movie') {
+    const isShortMovie =
+      /短一點(?:的)?電影|篇幅短(?:一點)?(?:的)?電影|shorter? movie/iu.test(
+        request.request,
+      )
+    if (!isShortMovie) return plan
+
+    const excludeGenreIds =
+      /不要|不看|避(?:開|免)|排除|除外|without|avoid|\bno\b/iu.test(
+        request.request,
+      )
+        ? plan.hard_constraints.exclude_genre_ids
+        : []
+    const hardConstraints = {
+      ...plan.hard_constraints,
+      exclude_genre_ids: excludeGenreIds,
+      runtime_min: 60,
+      runtime_max: 90,
+    }
+    return {
+      ...plan,
+      hard_constraints: hardConstraints,
+      display_labels: {
+        ...plan.display_labels,
+        hard: [
+          ...(excludeGenreIds.length ||
+          plan.hard_constraints.exclude_keywords.length ||
+          plan.hard_constraints.release_year_min ||
+          plan.hard_constraints.release_year_max ||
+          plan.hard_constraints.original_language ||
+          plan.hard_constraints.origin_country
+            ? plan.display_labels.hard.filter(
+                (label) => !/分鐘|minutes?|短電影|short movie/iu.test(label),
+              )
+            : []),
+          request.locale === 'zh-TW' ? '60–90 分鐘' : '60–90 minutes',
+        ].slice(0, 6),
+      },
+      discover_plan: {
+        ...plan.discover_plan,
+        exclude_genre_ids: excludeGenreIds,
+        runtime_min: 60,
+        runtime_max: 90,
+      },
+    }
+  }
 
   const isJapaneseAnimation =
     /日本(?:的)?動畫|日本アニメ|japanese anime/iu.test(request.request)
   const isJapaneseDrama =
-    /日劇|日本(?:的)?(?:劇集|影集|電視劇)|japanese drama/iu.test(
+    /日劇|日本(?:的)?(?:真人)?(?:劇集|影集|電視劇)|japanese drama/iu.test(
       request.request,
     )
   const isLight = /輕鬆|放鬆|light(?:hearted)?|easygoing/iu.test(
     request.request,
   )
+  const isThriller = /\bthriller\b/iu.test(request.request)
+  const excludesHorror =
+    /(?:\bno\b|without|avoid)\s+(?:any\s+)?horror|horror\s+(?:is\s+)?(?:excluded|avoided)/iu.test(
+      request.request,
+    )
+  if (isThriller || excludesHorror) {
+    const namedGenreIds = new Set<number>(
+      Object.entries(TMDB_TV_GENRES)
+        .filter(([name]) =>
+          new RegExp(`\\b${name.replaceAll('_', '[ -]')}\\b`, 'iu').test(
+            request.request,
+          ),
+        )
+        .map(([, id]) => id),
+    )
+    const includeGenres = isThriller
+      ? plan.soft_preferences.include_genres.filter((genre) =>
+          namedGenreIds.has(genre.id),
+        )
+      : plan.soft_preferences.include_genres
+    const keywords =
+      isThriller &&
+      !plan.soft_preferences.keywords.some((keyword) =>
+        /thrill|suspense/iu.test(keyword.lookup_name),
+      )
+        ? [
+            ...plan.soft_preferences.keywords,
+            {
+              lookup_name: 'thriller',
+              display_label: 'Thriller',
+              source: 'explicit' as const,
+            },
+          ].slice(0, 2)
+        : plan.soft_preferences.keywords
+    const excludeGenreIds = excludesHorror
+      ? plan.hard_constraints.exclude_genre_ids.filter((id) =>
+          namedGenreIds.has(id),
+        )
+      : plan.hard_constraints.exclude_genre_ids
+    const excludeKeywords =
+      excludesHorror &&
+      !plan.hard_constraints.exclude_keywords.some((keyword) =>
+        /horror/iu.test(keyword.lookup_name),
+      )
+        ? [
+            ...plan.hard_constraints.exclude_keywords,
+            { lookup_name: 'horror', display_label: 'No horror' },
+          ].slice(0, 2)
+        : plan.hard_constraints.exclude_keywords
+    plan = {
+      ...plan,
+      hard_constraints: {
+        ...plan.hard_constraints,
+        exclude_genre_ids: excludeGenreIds,
+        exclude_keywords: excludeKeywords,
+      },
+      soft_preferences: {
+        ...plan.soft_preferences,
+        include_genres: includeGenres,
+        keywords,
+      },
+      display_labels: {
+        hard: [
+          ...plan.display_labels.hard.filter(
+            (label) => !/thrill|series|影集|劇集/iu.test(label),
+          ),
+          ...(excludesHorror
+            ? [request.locale === 'zh-TW' ? '排除恐怖' : 'No horror']
+            : []),
+        ].slice(0, 6),
+        soft: [
+          ...plan.display_labels.soft,
+          ...(isThriller
+            ? [request.locale === 'zh-TW' ? '驚悚' : 'Thriller']
+            : []),
+        ].slice(0, 4),
+      },
+      discover_plan: {
+        ...plan.discover_plan,
+        include_genres: includeGenres,
+        exclude_genre_ids: excludeGenreIds,
+        exclude_keywords: excludeKeywords,
+        keywords,
+      },
+    }
+  }
   if (!isJapaneseDrama && !isJapaneseAnimation) return plan
 
   const excludeGenreIds = plan.hard_constraints.exclude_genre_ids.filter(
@@ -467,7 +696,21 @@ export function applyDeterministicMediaRules(
     hard_constraints: hardConstraints,
     soft_preferences: softPreferences,
     display_labels: {
-      ...plan.display_labels,
+      hard: [
+        ...plan.display_labels.hard.filter(
+          (label) => !/輕鬆|放鬆|幽默|愉快|light|easygoing/iu.test(label),
+        ),
+        ...(isJapaneseDrama && !isJapaneseAnimation
+          ? [
+              request.locale === 'zh-TW'
+                ? '日本真人影集'
+                : 'Japanese live action',
+            ]
+          : []),
+        ...(excludeGenreIds.includes(16)
+          ? [request.locale === 'zh-TW' ? '排除動畫' : 'No animation']
+          : []),
+      ].slice(0, 6),
       soft:
         isLight &&
         !plan.display_labels.soft.includes(
@@ -568,6 +811,7 @@ export function buildDiscoverSearchParams(
   keywordIds: number[],
   sortBy: 'popularity.desc' | 'vote_average.desc',
   includeInferred = true,
+  excludedKeywordIds: number[] = [],
 ) {
   const params = new URLSearchParams({
     include_adult: 'false',
@@ -582,9 +826,12 @@ export function buildDiscoverSearchParams(
     .map((genre) => genre.id)
   if (genreIds.length) params.set('with_genres', genreIds.join('|'))
   if (keywordIds.length) params.set('with_keywords', keywordIds.join('|'))
+  if (excludedKeywordIds.length)
+    params.set('without_keywords', excludedKeywordIds.join('|'))
   if (plan.exclude_genre_ids.length) {
     params.set('without_genres', plan.exclude_genre_ids.join('|'))
   }
+  if (plan.runtime_min) params.set('with_runtime.gte', String(plan.runtime_min))
   if (plan.runtime_max) params.set('with_runtime.lte', String(plan.runtime_max))
   if (plan.release_year_min) {
     params.set(
@@ -649,6 +896,8 @@ export function isGeneralExploration(plan: ContextPlan) {
     plan.soft_preferences.include_genres.length === 0 &&
     plan.soft_preferences.keywords.length === 0 &&
     hard.exclude_genre_ids.length === 0 &&
+    hard.exclude_keywords.length === 0 &&
+    hard.runtime_min === undefined &&
     hard.runtime_max === undefined &&
     hard.release_year_min === undefined &&
     hard.release_year_max === undefined &&
@@ -663,7 +912,7 @@ export function createPlanMessages(request: RecommendationRequest) {
   return [
     {
       role: 'system',
-      content: `Create a safe TMDB ${request.media_type} query plan and call plan_movie_search. The UI-selected media type is ${request.media_type}; never infer or change it. Write summaries, display labels, and person names in ${language}. Only add a person when the user explicitly names them. Use at most two people with role cast, director, writer, producer, or any; default to any-match and use all-match only when the user explicitly asks for shared participation. Genre values must use the supplied canonical genre names, never TMDB IDs. Keyword lookup_name values must be concise English TMDB terms, never IDs; display_label remains localized. Mark every included genre and keyword as explicit only when the user stated it, otherwise inferred. Explicit goals override inferred mood direction. Only explicit restrictions belong in hard_constraints. Use at most three included genres, three excluded genres, two keywords, and three qualities. Do not diagnose the user, reveal reasoning, infer celebrities, or use reference-movie searches.`,
+      content: `Create a safe TMDB ${request.media_type} query plan and call plan_movie_search. The UI-selected media type is ${request.media_type}; never infer or change it. Translate every summary, display label, and person name into ${language}, even when the request uses another language; do not copy untranslated input into those fields. Only add a person when the user explicitly names them. Use at most two people with role cast, director, writer, producer, or any; default to any-match and use all-match only when the user explicitly asks for shared participation. Genre values must use the supplied canonical genre names, never TMDB IDs. Never substitute an unavailable genre concept with different genres; represent the unavailable included concept as a soft keyword and the unavailable excluded concept as exclude_keywords. Keyword lookup_name values must be concise English TMDB terms, never IDs; display_label remains localized. Mark a genre or keyword explicit when the user names that concept; use inferred only for mood interpretation. Only explicit restrictions belong in hard_constraints: never invent exclusions, durations, years, languages, or countries. A country does not imply a language, and a language does not imply a country. Use runtime fields only for stated numeric durations; the application separately maps the phrase short movie to 60–90 minutes. Qualities may describe only qualities or moods requested by the user; never add popularity, ratings, critical acclaim, recency, or video quality by default. Explicit goals override inferred mood direction. Use at most three included genres, three excluded genres, two included keywords, two excluded keywords, and three qualities. Do not diagnose the user, reveal reasoning, infer celebrities, or use reference-movie searches.`,
     },
     {
       role: 'user',
@@ -683,6 +932,7 @@ export function createPlanTool(mediaType: MediaType) {
     function: {
       name: 'plan_movie_search',
       description: `Return the validated contextual ${mediaType} search plan.`,
+      strict: true,
       parameters: {
         type: 'object',
         additionalProperties: false,
@@ -695,30 +945,85 @@ export function createPlanTool(mediaType: MediaType) {
           'display_labels',
         ],
         properties: {
-          intent_summary: { type: 'string' },
+          intent_summary: {
+            type: 'string',
+            description:
+              'Concise summary translated into the requested locale; never copy untranslated input.',
+          },
           hard_constraints: {
             type: 'object',
             additionalProperties: false,
-            required: ['exclude_genres'],
+            required: [
+              'exclude_genres',
+              'exclude_keywords',
+              'runtime_min',
+              'runtime_max',
+              'release_year_min',
+              'release_year_max',
+              'original_language',
+              'origin_country',
+            ],
             properties: {
               exclude_genres: {
                 type: 'array',
                 maxItems: 3,
                 items: { type: 'string', enum: genreNames },
+                description:
+                  'Only allowed genre concepts the user explicitly negated; never inferred substitutes.',
               },
-              runtime_max: { type: 'integer', minimum: 1, maximum: 360 },
+              exclude_keywords: {
+                type: 'array',
+                maxItems: 2,
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['lookup_name', 'display_label'],
+                  properties: {
+                    lookup_name: {
+                      type: 'string',
+                      description: 'Concise English TMDB keyword term.',
+                    },
+                    display_label: {
+                      type: 'string',
+                      description: 'Localized label for the excluded concept.',
+                    },
+                  },
+                },
+              },
+              runtime_min: {
+                type: ['integer', 'null'],
+                minimum: 1,
+                maximum: 360,
+                description: 'Explicit numeric minimum runtime only.',
+              },
+              runtime_max: {
+                type: ['integer', 'null'],
+                minimum: 1,
+                maximum: 360,
+                description: 'Explicit numeric maximum runtime only.',
+              },
               release_year_min: {
-                type: 'integer',
+                type: ['integer', 'null'],
                 minimum: 1870,
                 maximum: 2100,
+                description: 'Explicit minimum release year only.',
               },
               release_year_max: {
-                type: 'integer',
+                type: ['integer', 'null'],
                 minimum: 1870,
                 maximum: 2100,
+                description: 'Explicit maximum release year only.',
               },
-              original_language: { type: 'string', pattern: '^[a-z]{2}$' },
-              origin_country: { type: 'string', pattern: '^[A-Z]{2}$' },
+              original_language: {
+                type: ['string', 'null'],
+                pattern: '^[a-z]{2}$',
+                description: 'ISO language code only when explicitly stated.',
+              },
+              origin_country: {
+                type: ['string', 'null'],
+                pattern: '^[A-Z]{2}$',
+                description: 'ISO country code only when explicitly stated.',
+              },
             },
           },
           soft_preferences: {
@@ -729,6 +1034,8 @@ export function createPlanTool(mediaType: MediaType) {
               include_genres: {
                 type: 'array',
                 maxItems: 3,
+                description:
+                  'Allowed genre concepts only; unavailable concepts belong in keywords, never substitute genres.',
                 items: {
                   type: 'object',
                   additionalProperties: false,
@@ -757,6 +1064,8 @@ export function createPlanTool(mediaType: MediaType) {
                 type: 'array',
                 maxItems: 3,
                 items: { type: 'string' },
+                description:
+                  'Only requested moods or qualities; no default popularity, rating, acclaim, recency, or video quality.',
               },
             },
           },
