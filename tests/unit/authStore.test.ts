@@ -39,24 +39,74 @@ describe('Supabase auth integration', () => {
     })
   })
 
-  it('starts GitHub OAuth sign-in through Supabase', async () => {
-    const signInWithOAuth = vi.fn().mockResolvedValue({ data: {}, error: null })
-    setSupabaseAuthClientForTesting({
-      auth: {
-        signInWithOAuth,
-      },
-    })
-
-    await useAuthStore.getState().signIn()
-
-    expect(signInWithOAuth).toHaveBeenCalledWith({
-      provider: 'github',
-      options: {
-        redirectTo: window.location.origin,
-      },
-    })
-    expect(useAuthStore.getState().error).toBeNull()
+  it('uses the Google profile picture metadata when avatar_url is absent', () => {
+    expect(
+      mapSupabaseUser(
+        makeSupabaseUser({
+          user_metadata: {
+            full_name: 'Ada Lovelace',
+            picture: 'https://example.com/google-profile.png',
+          },
+        }),
+      ).photoURL,
+    ).toBe('https://example.com/google-profile.png')
   })
+
+  it('falls back to linked identity profile data', () => {
+    expect(
+      mapSupabaseUser(
+        makeSupabaseUser({
+          user_metadata: {},
+          identities: [
+            {
+              id: 'identity-id',
+              user_id: 'supabase-user-id',
+              identity_id: 'provider-user-id',
+              provider: 'google',
+              identity_data: {
+                name: 'Grace Hopper',
+                picture: 'https://example.com/identity-profile.png',
+              },
+            },
+          ],
+        }),
+      ),
+    ).toMatchObject({
+      displayName: 'Grace Hopper',
+      photoURL: 'https://example.com/identity-profile.png',
+    })
+  })
+
+  it.each([
+    ['github', { redirectTo: window.location.origin }],
+    [
+      'google',
+      {
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'select_account' },
+      },
+    ],
+  ] as const)(
+    'starts %s OAuth sign-in through Supabase',
+    async (provider, options) => {
+      const signInWithOAuth = vi
+        .fn()
+        .mockResolvedValue({ data: {}, error: null })
+      setSupabaseAuthClientForTesting({
+        auth: {
+          signInWithOAuth,
+        },
+      })
+
+      await useAuthStore.getState().signIn(provider)
+
+      expect(signInWithOAuth).toHaveBeenCalledWith({
+        provider,
+        options,
+      })
+      expect(useAuthStore.getState().error).toBeNull()
+    },
+  )
 
   it('loads the current session and updates when auth state changes', async () => {
     let authStateCallback:

@@ -134,7 +134,7 @@ async function callOpenAI(
           function: { name: tool.function.name },
         },
         max_completion_tokens: 900,
-        temperature: 0.2,
+        temperature: 0,
       }),
     },
     'AI model request failed',
@@ -289,14 +289,27 @@ async function resolveKeywords(
   signal: AbortSignal,
   fetcher: typeof fetch,
 ) {
-  const keywords = await Promise.all(
-    plan.discover_plan.keywords.map((keyword) =>
-      resolveKeyword(keyword, config, signal, fetcher),
+  const resolveAll = (keywords: KeywordPreference[]) =>
+    Promise.all(
+      keywords.map((keyword) =>
+        resolveKeyword(keyword, config, signal, fetcher),
+      ),
+    ).then((items) =>
+      items.filter(
+        (keyword): keyword is ResolvedKeyword => keyword !== undefined,
+      ),
+    )
+
+  const [included, excluded] = await Promise.all([
+    resolveAll(plan.discover_plan.keywords),
+    resolveAll(
+      plan.discover_plan.exclude_keywords.map((keyword) => ({
+        ...keyword,
+        source: 'explicit' as const,
+      })),
     ),
-  )
-  return keywords.filter(
-    (keyword): keyword is ResolvedKeyword => keyword !== undefined,
-  )
+  ])
+  return { included, excluded }
 }
 
 function creditMatches(
@@ -396,6 +409,7 @@ async function fetchDiscover(
   request: RecommendationRequest,
   plan: ContextPlan,
   resolvedKeywords: ResolvedKeyword[],
+  excludedKeywords: ResolvedKeyword[],
   sortBy: 'popularity.desc' | 'vote_average.desc',
   includeInferred: boolean,
   castFilter: string | undefined,
@@ -412,6 +426,7 @@ async function fetchDiscover(
     keywordIds,
     sortBy,
     includeInferred,
+    excludedKeywords.map((keyword) => keyword.id),
   )
   params.set('language', request.locale === 'zh-TW' ? 'zh-TW' : 'en-US')
   if (castFilter) params.set('with_cast', castFilter)
@@ -434,6 +449,7 @@ async function fetchPools(
   request: RecommendationRequest,
   plan: ContextPlan,
   keywords: ResolvedKeyword[],
+  excludedKeywords: ResolvedKeyword[],
   includeInferred: boolean,
   castFilter: string | undefined,
   allowedMediaIds: Promise<Set<number> | undefined>,
@@ -446,6 +462,7 @@ async function fetchPools(
       request,
       plan,
       keywords,
+      excludedKeywords,
       'popularity.desc',
       includeInferred,
       castFilter,
@@ -457,6 +474,7 @@ async function fetchPools(
       request,
       plan,
       keywords,
+      excludedKeywords,
       'vote_average.desc',
       includeInferred,
       castFilter,
@@ -495,7 +513,8 @@ export async function discoverCandidates(
   let candidates = await fetchPools(
     request,
     plan,
-    resolvedKeywords,
+    resolvedKeywords.included,
+    resolvedKeywords.excluded,
     true,
     castFilter,
     allowedMediaIds,
@@ -509,7 +528,8 @@ export async function discoverCandidates(
     const relaxed = await fetchPools(
       request,
       plan,
-      resolvedKeywords,
+      resolvedKeywords.included,
+      resolvedKeywords.excluded,
       false,
       castFilter,
       allowedMediaIds,
@@ -524,7 +544,7 @@ export async function discoverCandidates(
   return {
     candidates,
     resolvedPeople,
-    resolvedKeywords,
+    resolvedKeywords: resolvedKeywords.included,
     usedFallback,
   }
 }

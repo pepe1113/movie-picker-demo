@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   Film,
+  Github,
   Heart,
   History,
   Languages,
@@ -130,7 +131,20 @@ export function Header() {
           {isAuthenticated ? (
             <>
               <div className="text-muted-foreground inline-flex h-9 items-center gap-2 px-2 text-sm font-medium">
-                <User className="size-4" />
+                <span className="bg-secondary relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/15">
+                  <User className="size-4" aria-hidden="true" />
+                  {user?.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={`${user.displayName ?? t('common.user')} avatar`}
+                      className="absolute inset-0 size-full rounded-full object-cover"
+                      referrerPolicy="no-referrer"
+                      onError={(event) => {
+                        event.currentTarget.hidden = true
+                      }}
+                    />
+                  ) : null}
+                </span>
                 <span className="hidden max-w-32 truncate sm:inline">
                   {user?.displayName ?? t('common.user')}
                 </span>
@@ -141,10 +155,26 @@ export function Header() {
               </Button>
             </>
           ) : (
-            <Button variant="ghost" size="sm" onClick={() => signIn()}>
-              <User className="size-4" />
-              <span className="hidden sm:inline">{t('common.login')}</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <User className="size-4" />
+                  <span className="hidden sm:inline">{t('common.login')}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => signIn('github')}>
+                  <Github className="size-4" />
+                  {t('common.loginWithGithub')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signIn('google')}>
+                  <span className="flex size-4 items-center justify-center font-bold">
+                    G
+                  </span>
+                  {t('common.loginWithGoogle')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           {/* 手機版選單 */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>

@@ -2,10 +2,11 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import {
   getCurrentSupabaseUser,
-  signInWithGithub,
+  signInWithProvider,
   signOutFromSupabase,
   subscribeToSupabaseAuthState,
 } from '@/services/supabase/auth'
+import type { AuthProvider } from '@/services/supabase/auth'
 import type { User } from '@/types/user'
 
 interface AuthState {
@@ -16,7 +17,7 @@ interface AuthState {
 }
 
 interface AuthActions {
-  signIn: () => Promise<void>
+  signIn: (provider?: AuthProvider) => Promise<void>
   signOut: () => Promise<void>
   initializeAuth: () => Promise<() => void>
   setUser: (user: User | null) => void
@@ -36,10 +37,10 @@ export const useAuthStore = create<AuthStore>()(
       error: null,
 
       // Actions
-      signIn: async () => {
+      signIn: async (provider = 'github') => {
         set({ isLoading: true, error: null }, false, 'signIn/start')
         try {
-          await signInWithGithub()
+          await signInWithProvider(provider)
           set({ isLoading: false }, false, 'signIn/redirectStarted')
         } catch (error) {
           set(
