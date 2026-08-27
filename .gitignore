@@ -33,5 +33,15 @@ coverage/
 # Supabase local CLI state
 supabase/.temp/
 
-.claude/*
+.claude/
+.vscode/
 .superpowers/
+
+# Local agent and planning artifacts
+AGENTS.md
+docs/plans/
+docs/reports/
+docs/superpowers/
+
+# Bun is the project package manager
+package-lock.json
